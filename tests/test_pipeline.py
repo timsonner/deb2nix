@@ -13,6 +13,7 @@ from deb2nix.pipeline import run
 ROOT = Path(__file__).resolve().parents[1]
 HELLO = ROOT / "fixtures" / "hello-deb2nix_0.1.0_amd64.deb"
 ELECTRON = ROOT / "fixtures" / "fake-electron-app_0.0.1_amd64.deb"
+CHROMIUM = ROOT / "fixtures" / "fake-chromium-browser_0.0.1_amd64.deb"
 DRIVER = ROOT / "fixtures" / "fake-displaylink_0.0.1_amd64.deb"
 
 
@@ -34,6 +35,14 @@ class FixturePipelineTests(unittest.TestCase):
         with TemporaryDirectory() as td:
             result = run(str(ELECTRON), Path(td), skip_locate=True)
             self.assertEqual(result.classification.profile, "electron")
+            self.assertIn("throw", (Path(td) / "package.nix").read_text())
+
+    def test_chromium_browser_markers(self) -> None:
+        if not CHROMIUM.is_file():
+            self.skipTest("chromium fixture .deb missing; run scripts/make-fixtures.sh")
+        with TemporaryDirectory() as td:
+            result = run(str(CHROMIUM), Path(td), skip_locate=True)
+            self.assertEqual(result.classification.profile, "chromium-browser")
             self.assertIn("throw", (Path(td) / "package.nix").read_text())
 
     def test_driver_markers(self) -> None:

@@ -58,6 +58,15 @@ class EmitTests(unittest.TestCase):
             self.assertIn("Electron", package)
             self.assertTrue((Path(td) / "package.stub.nix").is_file())
 
+    def test_chromium_browser_throws(self) -> None:
+        with TemporaryDirectory() as td:
+            emit_all(Path(td), _ctx("chromium-browser"))
+            package = (Path(td) / "package.nix").read_text()
+            self.assertIn("throw", package)
+            self.assertIn("chromium-browser", package)
+            self.assertIn("Chrome", package)
+            self.assertTrue((Path(td) / "package.stub.nix").is_file())
+
     def test_driver_throws_no_kernel_load(self) -> None:
         with TemporaryDirectory() as td:
             emit_all(Path(td), _ctx("driver"))

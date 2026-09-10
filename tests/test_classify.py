@@ -56,20 +56,42 @@ class ClassifyTests(unittest.TestCase):
         c = classify(_control(package="some-app"), inv, [])
         self.assertEqual(c.profile, "electron")
         self.assertNotEqual(c.profile, "cli")
+        self.assertNotEqual(c.profile, "chromium-browser")
 
     def test_vscode_name(self) -> None:
         inv = Inventory(files=["usr/share/code/code"], binaries=["usr/share/code/code"])
         c = classify(_control(package="code", description="Visual Studio Code"), inv, [])
         self.assertEqual(c.profile, "electron")
 
-    def test_chrome_chromium_family(self) -> None:
+    def test_grok_bot_name(self) -> None:
+        inv = Inventory(files=["usr/share/grok-bot/grok-bot"], binaries=["usr/share/grok-bot/grok-bot"])
+        c = classify(_control(package="grok-bot", description="Grok Bot desktop agent"), inv, [])
+        self.assertEqual(c.profile, "electron")
+
+    def test_chrome_is_chromium_browser_not_electron(self) -> None:
         inv = Inventory(
-            files=["opt/google/chrome/chrome-sandbox", "opt/google/chrome/icudtl.dat"],
+            files=["opt/google/chrome/chrome-sandbox", "opt/google/chrome/icudtl.dat", "opt/google/chrome/resources.pak"],
             binaries=["opt/google/chrome/chrome"],
         )
         c = classify(_control(package="google-chrome-stable"), inv, [])
+        self.assertEqual(c.profile, "chromium-browser")
+        self.assertNotEqual(c.profile, "electron")
+
+    def test_edge_is_chromium_browser(self) -> None:
+        inv = Inventory(
+            files=["opt/microsoft/msedge/chrome-sandbox"],
+            binaries=["opt/microsoft/msedge/msedge"],
+        )
+        c = classify(_control(package="microsoft-edge-stable"), inv, [])
+        self.assertEqual(c.profile, "chromium-browser")
+
+    def test_asar_wins_over_chrome_sandbox(self) -> None:
+        inv = Inventory(
+            files=["opt/app/resources/app.asar", "opt/app/chrome-sandbox"],
+            binaries=["opt/app/app"],
+        )
+        c = classify(_control(package="code"), inv, [])
         self.assertEqual(c.profile, "electron")
-        self.assertEqual(c.subtype, "chromium-browser")
 
     def test_gtk(self) -> None:
         inv = Inventory(files=["usr/bin/gedit-like"], binaries=["usr/bin/gedit-like"])

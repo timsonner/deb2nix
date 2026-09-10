@@ -268,9 +268,17 @@ def _throw_message(ctx: EmitContext) -> str:
         )
     elif profile == "electron":
         extra = (
-            "Electron/Chromium profile is stubbed in Phase 1. "
+            "Electron profile (Grok Bot / VS Code family) is stubbed until Phase 2. "
+            "Do not vendor app2nix's Electron-default template or --no-sandbox. "
             "Do not assume vscode-fhs / buildFHSEnv. "
-            "GUI smoke belongs on a NixOS+Hyprland VM (Phase 2)."
+            "GUI smoke belongs on a NixOS+Hyprland VM."
+        )
+    elif profile == "chromium-browser":
+        extra = (
+            "chromium-browser profile (Chrome / Edge family) is stubbed until Phase 2. "
+            "Distinct from generic electron: follow nixpkgs google-chrome / microsoft-edge "
+            "deb-repack patterns, not grok-bot-flake's bundled-Electron keep. "
+            "Unfree + hash-pin. GUI smoke later."
         )
     elif profile in {"gtk", "qt"}:
         extra = (
@@ -361,20 +369,29 @@ def _emit_phase2_stub(ctx: EmitContext) -> str:
     notes = {
         "electron": dedent(
             """
-            Phase 2 (NixOS + Hyprland GUI VM), not this cloud run:
+            Phase 2 (NixOS + Hyprland GUI VM) — Electron apps (Grok Bot, VS Code):
             - Unpack with dpkg-deb, keep upstream Electron (do not swap nixpkgs electron
               when native .node modules are ABI-locked — see jordangarrison/grok-bot-flake).
             - autoPatchelfHook over the bundled chrome/electron binary and .node modules.
             - wrapGAppsHook3 + makeWrapper; chrome-sandbox handling depends on user namespaces.
-            - Do NOT default to --no-sandbox (app2nix does; we will not).
+            - Do NOT vendor app2nix emit (GTK/Electron single template + --no-sandbox).
             - Patterns: nixpkgs signal-desktop-bin, vscode (not vscode-fhs unless requested),
-              nixpkgs#558990 grok-bot draft, Chrome/Edge unfree wrappers.
+              nixpkgs#558990 grok-bot draft.
+            - Grok Bot 0.47.0 URL is in fixtures/MATRIX.md; prefetch hash when Phase 2 starts.
             - Hash-pin fetchurl; allowUnfreePredicate for this pname only.
+            """
+        ).strip(),
+        "chromium-browser": dedent(
+            """
+            Phase 2 — Chromium browsers (Chrome, Edge), distinct from electron:
+            - nixpkgs google-chrome / microsoft-edge: fetchurl .deb, commandLineArgs, unfree.
+            - Widevine, sandbox, GTK wrap — not app.asar / electron ABI.
+            - Do not silently pick *-fhs. Hash-pin; allowUnfreePredicate.
             """
         ).strip(),
         "gtk": "wrapGAppsHook3, gtk3/gtk4, gdk-pixbuf loaders, dconf. No FHS unless mapping fails honestly.",
         "qt": "qt5/qt6.qtbase, wrapQtAppsHook. Prefer autoPatchelfHook over FHS.",
-        "driver": "Document-only. Never insmod, never dkms install, never DisplayLink kernel load.",
+        "driver": "Phase 3 parked. Synaptics EULA + nixpkgs requireFile/unfree/evdi/hardware.video.displaylink. Never insmod, never DKMS, never DisplayLink kernel load.",
         "system": "udev/firmware/systemd units need NixOS modules, not a user package install.",
         "fhs-fallback": "Only emit buildFHSEnv after an explicit --profile fhs-fallback *and* a human review of unmapped libs. Phase 1 still throws.",
     }

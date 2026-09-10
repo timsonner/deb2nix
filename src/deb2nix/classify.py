@@ -12,6 +12,7 @@ from deb2nix.inventory import Inventory
 PROFILES = (
     "cli",
     "electron",
+    "chromium-browser",
     "gtk",
     "qt",
     "driver",
@@ -19,35 +20,32 @@ PROFILES = (
     "fhs-fallback",
 )
 
+# Electron desktop apps (Grok Bot, VS Code, Discord, …) — distinct from browsers.
 ELECTRON_FILENAMES = {
     "app.asar",
-    "chrome-sandbox",
     "chrome_crashpad_handler",
     "chrome_crashpad_handler.exe",
     "v8_context_snapshot.bin",
     "snapshot_blob.bin",
     "natives_blob.bin",
+    "vk_swiftshader_icd.json",
+    "libvk_swiftshader.so",
+    "licenses.chromium.html",
+}
+
+# Shared Chromium payload files. Alone they do not mean Electron (Chrome/Edge ship them too).
+CHROMIUM_PAYLOAD_FILES = {
+    "chrome-sandbox",
     "icudtl.dat",
     "resources.pak",
     "chrome_100_percent.pak",
     "chrome_200_percent.pak",
-    "vk_swiftshader_icd.json",
-    "libvk_swiftshader.so",
-    "licenses.chromium.html",
 }
 
 ELECTRON_PACKAGE_NAMES = {
     "code",
     "code-insiders",
     "code-exploration",
-    "google-chrome-stable",
-    "google-chrome-beta",
-    "google-chrome-unstable",
-    "chromium-browser",
-    "microsoft-edge-stable",
-    "microsoft-edge-beta",
-    "microsoft-edge-dev",
-    "brave-browser",
     "discord",
     "slack-desktop",
     "signal-desktop",
@@ -59,22 +57,42 @@ ELECTRON_PACKAGE_NAMES = {
     "1password",
 }
 
+CHROMIUM_BROWSER_PACKAGE_NAMES = {
+    "google-chrome-stable",
+    "google-chrome-beta",
+    "google-chrome-unstable",
+    "chromium-browser",
+    "chromium",
+    "ungoogled-chromium",
+    "microsoft-edge-stable",
+    "microsoft-edge-beta",
+    "microsoft-edge-dev",
+    "brave-browser",
+}
+
 # Phrases that may appear in Description. Do NOT include bare "electron":
 # a CLI package that says "no Electron" must stay cli.
 ELECTRON_DESC_PHRASES = (
     "visual studio code",
+    "grok bot",
+)
+
+CHROMIUM_BROWSER_DESC_PHRASES = (
     "microsoft edge",
     "google chrome",
-    "grok bot",
     "chromium browser",
 )
 
 ELECTRON_PKG_TOKENS = (
     "electron",
-    "chrome",
-    "chromium",
     "vscode",
     "grok-bot",
+)
+
+CHROMIUM_BROWSER_PKG_TOKENS = (
+    "chrome",
+    "chromium",
+    "brave",
 )
 
 GTK_LIBS = ("libgtk-3.so", "libgtk-4.so", "libgdk-3.so", "libwebkit2gtk")
@@ -152,40 +170,60 @@ def _classify(
             ],
         )
 
-    electron_files = sorted(
-        p for p in inventory.files if PathName(p) in ELECTRON_FILENAMES or p.endswith("app.asar")
+    asar_files = sorted(
+        p for p in inventory.files if PathName(p) == "app.asar" or p.endswith("app.asar")
     )
     electron_dirs = [d for d in inventory.dirs if d.endswith("app.asar.unpacked")]
-    name_hit = _electron_name_hit(pkg, desc)
+    electron_payload = sorted(
+        p for p in inventory.files if PathName(p) in ELECTRON_FILENAMES
+    )
+    chromium_payload = sorted(
+        p for p in inventory.files if PathName(p) in CHROMIUM_PAYLOAD_FILES
+    )
+    electron_name = _electron_name_hit(pkg, desc)
+    browser_name = _chromium_browser_name_hit(pkg, desc)
     depends_electron = bool(re.search(r"(^|[,\s])electron([0-9]|-|$)", depends))
-    chromium_pack = (
-        inventory.has_name("resources.pak") and inventory.has_name("icudtl.dat")
-    ) or inventory.has_name("chrome-sandbox")
 
-    electron_reasons: list[str] = []
-    if electron_files:
-        electron_reasons.append(
-            "electron/chromium payload files: " + ", ".join(PathName(p) for p in electron_files[:8])
-        )
-    if electron_dirs:
-        electron_reasons.append("found app.asar.unpacked")
-    if name_hit:
-        electron_reasons.append(f"package name/description matches electron/chromium family ({control.package})")
-    if depends_electron:
-        electron_reasons.append("Depends mentions electron")
-    if chromium_pack and not electron_files:
-        electron_reasons.append("chromium resources.pak / chrome-sandbox layout")
-
-    if electron_reasons:
-        subtype = "electron"
-        if any(token in pkg for token in ("chrome", "edge", "chromium", "brave")):
-            subtype = "chromium-browser"
+    # app.asar (or app.asar.unpacked) is the Electron-app tell. Browsers do not ship it.
+    # chrome-sandbox / *.pak without asar is a Chromium *browser* (Chrome/Edge).
+    if asar_files or electron_dirs or (electron_name and not browser_name) or depends_electron:
+        reasons: list[str] = []
+        if asar_files:
+            reasons.append("electron payload: app.asar")
+        if electron_dirs:
+            reasons.append("found app.asar.unpacked")
+        if electron_payload:
+            reasons.append(
+                "electron/chromium helper files: "
+                + ", ".join(PathName(p) for p in electron_payload[:8])
+            )
+        if electron_name:
+            reasons.append(f"package name/description matches Electron app ({control.package})")
+        if depends_electron:
+            reasons.append("Depends mentions electron")
         return Classification(
             profile="electron",
-            confidence="high" if electron_files or chromium_pack else "medium",
-            reasons=electron_reasons,
-            evidence={"files": electron_files[:20], "package": [control.package]},
-            subtype=subtype,
+            confidence="high" if asar_files or electron_dirs else "medium",
+            reasons=reasons or ["electron name/depends heuristics"],
+            evidence={"files": (asar_files + electron_payload)[:20], "package": [control.package]},
+            subtype="electron",
+        )
+
+    if browser_name or chromium_payload:
+        reasons = []
+        if browser_name:
+            reasons.append(f"package name/description matches Chromium browser ({control.package})")
+        if chromium_payload:
+            reasons.append(
+                "chromium payload files (no app.asar): "
+                + ", ".join(PathName(p) for p in chromium_payload[:8])
+            )
+        return Classification(
+            profile="chromium-browser",
+            confidence="high" if browser_name or "chrome-sandbox" in {PathName(p) for p in chromium_payload} else "medium",
+            reasons=reasons,
+            evidence={"files": chromium_payload[:20], "package": [control.package]},
+            subtype="chromium-browser",
         )
 
     gtk_hits = sorted({lib for lib in needed if any(lib.startswith(g) for g in GTK_LIBS)})
@@ -219,7 +257,7 @@ def _classify(
             evidence={"binaries": inventory.binaries[:20]},
         )
 
-    reasons = ["layout does not match cli/electron/gtk/qt/driver heuristics"]
+    reasons = ["layout does not match cli/electron/chromium-browser/gtk/qt/driver heuristics"]
     if unmapped:
         reasons.append(f"{len(unmapped)} unmapped libraries; refusing silent buildFHSEnv")
     return Classification(
@@ -233,13 +271,26 @@ def _classify(
     )
 
 
+def _token_in_pkg(pkg: str, tok: str) -> bool:
+    return bool(re.search(rf"(^|[-_+]){re.escape(tok)}([-_+]|$)", pkg))
+
+
 def _electron_name_hit(pkg: str, desc: str) -> bool:
     if pkg in ELECTRON_PACKAGE_NAMES:
         return True
-    for tok in ELECTRON_PKG_TOKENS:
-        if re.search(rf"(^|[-_+]){re.escape(tok)}([-_+]|$)", pkg):
-            return True
+    if any(_token_in_pkg(pkg, tok) for tok in ELECTRON_PKG_TOKENS):
+        return True
     return any(phrase in desc for phrase in ELECTRON_DESC_PHRASES)
+
+
+def _chromium_browser_name_hit(pkg: str, desc: str) -> bool:
+    if pkg in CHROMIUM_BROWSER_PACKAGE_NAMES:
+        return True
+    if pkg.startswith("microsoft-edge") or pkg.startswith("google-chrome"):
+        return True
+    if any(_token_in_pkg(pkg, tok) for tok in CHROMIUM_BROWSER_PKG_TOKENS):
+        return True
+    return any(phrase in desc for phrase in CHROMIUM_BROWSER_DESC_PHRASES)
 
 
 def _driver_hits(control: Control, inventory: Inventory, pkg: str, desc: str) -> list[str]:

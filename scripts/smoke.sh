@@ -21,22 +21,27 @@ nix build "$OUT" --no-link --print-out-paths | tee "$OUT/store-path.txt"
 STORE="$(cat "$OUT/store-path.txt")"
 "$STORE/bin/hello-deb2nix"
 
-echo "---- classifier electron vs cli ----"
+echo "---- classifier electron vs chromium-browser vs cli ----"
 EOUT="${TMPDIR:-/tmp}/deb2nix-smoke-electron"
-rm -rf "$EOUT"
+COUT="${TMPDIR:-/tmp}/deb2nix-smoke-chromium"
+rm -rf "$EOUT" "$COUT"
 nix run "$ROOT"#deb2nix -- "$ROOT/fixtures/fake-electron-app_0.0.1_amd64.deb" --out "$EOUT" --skip-locate
+nix run "$ROOT"#deb2nix -- "$ROOT/fixtures/fake-chromium-browser_0.0.1_amd64.deb" --out "$COUT" --skip-locate
 python3 - <<PY
 import json
 from pathlib import Path
 hello = json.loads(Path("$OUT/report.json").read_text())
 elec = json.loads(Path("$EOUT/report.json").read_text())
+chrome = json.loads(Path("$COUT/report.json").read_text())
 assert hello["profile"]["profile"] == "cli", hello["profile"]
 assert elec["profile"]["profile"] == "electron", elec["profile"]
+assert chrome["profile"]["profile"] == "chromium-browser", chrome["profile"]
 print("classifier: hello ->", hello["profile"]["profile"])
 print("classifier: fake-electron ->", elec["profile"]["profile"])
-drv = Path("$EOUT/package.nix").read_text()
-assert "throw" in drv
-print("electron stub throws, as expected")
+print("classifier: fake-chromium-browser ->", chrome["profile"]["profile"])
+assert "throw" in Path("$EOUT/package.nix").read_text()
+assert "throw" in Path("$COUT/package.nix").read_text()
+print("electron and chromium-browser stubs throw, as expected")
 PY
 
 echo "smoke ok"

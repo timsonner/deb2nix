@@ -73,7 +73,7 @@ def run(
         # but unknown. For Section: utils/misc without non-free, treat as unknown-unfree
         # only when classifier is electron/chromium or section is non-free.
         if not control.license and not control.is_unfree():
-            if classification.profile == "electron" or _looks_proprietary(control):
+            if classification.profile in {"electron", "chromium-browser"} or _looks_proprietary(control):
                 unfree = True
                 license_expr = "lib.licenses.unfree"
             elif _looks_mit(control):
