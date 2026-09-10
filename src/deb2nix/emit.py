@@ -238,15 +238,37 @@ def _unfree_comment(ctx: EmitContext) -> str:
     )
 
 
-def _ignore_block(ctx: EmitContext) -> str:
-    unmapped_ignore = [nix_string(u) for u in ctx.mapping.unmapped]
-    if not unmapped_ignore:
+def _ignore_block(ctx: EmitContext, extra: list[str] | None = None) -> str:
+    names: list[str] = []
+    for u in list(ctx.mapping.unmapped) + list(extra or []):
+        if u not in names:
+            names.append(u)
+    if not names:
         return ""
+    quoted = [nix_string(u) for u in names]
     return (
         "\n  autoPatchelfIgnoreMissingDeps = [\n"
-        + "\n".join(f"    {u}" for u in unmapped_ignore)
+        + "\n".join(f"    {u}" for u in quoted)
         + "\n  ];\n"
     )
+
+
+def _drop_qt_inputs(
+    args: list[str], inputs: list[str], ctx: EmitContext
+) -> tuple[list[str], list[str], list[str]]:
+    """Qt5+Qt6 in the same derivation trips nixpkgs setup hooks. Chromium/Electron
+    still get GTK via wrapGAppsHook3; Qt sonames are ignored by autoPatchelf."""
+    qt_pkgs = [i for i in inputs if i.startswith("qt5.") or i.startswith("qt6.")]
+    if not qt_pkgs:
+        return args, inputs, []
+    inputs = [i for i in inputs if i not in qt_pkgs]
+    args = [a for a in args if a not in {"qt5", "qt6"}]
+    qt_libs = [
+        m.lib
+        for m in ctx.mapping.mapped
+        if (m.pkg or "").startswith("qt5.") or (m.pkg or "").startswith("qt6.")
+    ]
+    return args, inputs, qt_libs
 
 
 def _emit_cli_package(ctx: EmitContext) -> str:
@@ -327,6 +349,7 @@ def _emit_gui_userland_package(ctx: EmitContext) -> str:
         extra_native=["wrapGAppsHook3"],
         extra_inputs=GUI_USERLAND_EXTRAS,
     )
+    args, inputs, qt_ignore = _drop_qt_inputs(args, inputs, ctx)
     arg_block = ",\n  ".join(args)
     input_block = _fmt_list(inputs)
     native_block = _fmt_list(native)
@@ -336,17 +359,19 @@ def _emit_gui_userland_package(ctx: EmitContext) -> str:
     description = ctx.control.synopsis or ctx.pname
     main = ctx.main_program or ctx.pname
     profile = ctx.classification.profile
+    pname_nix = nix_string(ctx.pname)
     return f"""{_header_comment(ctx)}
 # Userland {profile} expression (Tim 2026-09-10 unfree approval).
 # GUI smoke is a separate NixOS+Hyprland step. Sandbox flags are left to the
 # operator; this generator does not disable the Chromium sandbox.
 # chrome-sandbox is mode 0755 (user namespaces), never setuid, never DKMS.
+# Qt5/Qt6 are not in buildInputs (hook conflict); sonames ignored if present.
 {{
   {arg_block},
 }}:
 
 stdenv.mkDerivation (finalAttrs: {{
-  pname = {nix_string(ctx.pname)};
+  pname = {pname_nix};
   version = {nix_string(ctx.control.version)};
 {_unfree_comment(ctx)}
 {src}
@@ -358,10 +383,11 @@ stdenv.mkDerivation (finalAttrs: {{
   buildInputs = [
 {input_block}
   ];
-{_ignore_block(ctx)}
+{_ignore_block(ctx, extra=qt_ignore)}
   dontConfigure = true;
   dontBuild = true;
   dontWrapGApps = true;
+  dontWrapQtApps = true;
 
   unpackPhase = ''
     runHook preUnpack
@@ -399,6 +425,13 @@ stdenv.mkDerivation (finalAttrs: {{
     done
     # Never chmod u+s chrome-sandbox from this generator.
     find "$out" -name chrome-sandbox -type f -exec chmod 0755 {{}} \\; || true
+    mkdir -p "$out/bin"
+    if [ -z "$(find "$out/bin" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
+      exe="$(find "$out/opt" -maxdepth 2 -type f -name {pname_nix} | head -n 1 || true)"
+      if [ -n "$exe" ]; then
+        ln -s "$exe" "$out/bin/{ctx.pname}" || true
+      fi
+    fi
     runHook postInstall
   '';
 
@@ -596,9 +629,11 @@ def _emit_gui_notes(ctx: EmitContext) -> str:
         Still out of scope for this generator:
 
         - GUI smoke (needs NixOS + Hyprland). `nix build` here is not a display test.
-        - `--no-sandbox` (app2nix default; we will not).
+        - Disabling the Chromium sandbox (app2nix default; we will not).
         - `vscode-fhs` / silent `buildFHSEnv`.
         - `chrome-sandbox` setuid. Mode 0755; relies on user namespaces.
+        - Qt5+Qt6 in the same `buildInputs` (nixpkgs setup-hook conflict). Qt
+          `DT_NEEDED` entries are listed in `autoPatchelfIgnoreMissingDeps`.
         - Publishing to public nixpkgs.
 
         Hash: `{ctx.src_hash}`

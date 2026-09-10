@@ -6,6 +6,7 @@
 # GUI smoke is a separate NixOS+Hyprland step. Sandbox flags are left to the
 # operator; this generator does not disable the Chromium sandbox.
 # chrome-sandbox is mode 0755 (user namespaces), never setuid, never DKMS.
+# Qt5/Qt6 are not in buildInputs (hook conflict); sonames ignored if present.
 {
   lib,
   stdenv,
@@ -14,8 +15,6 @@
   makeWrapper,
   wrapGAppsHook3,
   fetchurl,
-  qt5,
-  qt6,
   xorg,
   alsa-lib,
   at-spi2-atk,
@@ -61,8 +60,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildInputs = [
     stdenv.cc.cc.lib
-    qt5.qtbase
-    qt6.qtbase
     xorg.libX11
     xorg.libXcomposite
     xorg.libXdamage
@@ -92,9 +89,19 @@ stdenv.mkDerivation (finalAttrs: {
     libsecret
   ];
 
+  autoPatchelfIgnoreMissingDeps = [
+    "libQt5Core.so.5"
+    "libQt5Gui.so.5"
+    "libQt5Widgets.so.5"
+    "libQt6Core.so.6"
+    "libQt6Gui.so.6"
+    "libQt6Widgets.so.6"
+  ];
+
   dontConfigure = true;
   dontBuild = true;
   dontWrapGApps = true;
+  dontWrapQtApps = true;
 
   unpackPhase = ''
     runHook preUnpack
@@ -132,6 +139,13 @@ stdenv.mkDerivation (finalAttrs: {
     done
     # Never chmod u+s chrome-sandbox from this generator.
     find "$out" -name chrome-sandbox -type f -exec chmod 0755 {} \; || true
+    mkdir -p "$out/bin"
+    if [ -z "$(find "$out/bin" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
+      exe="$(find "$out/opt" -maxdepth 2 -type f -name "microsoft-edge-stable" | head -n 1 || true)"
+      if [ -n "$exe" ]; then
+        ln -s "$exe" "$out/bin/microsoft-edge-stable" || true
+      fi
+    fi
     runHook postInstall
   '';
 
