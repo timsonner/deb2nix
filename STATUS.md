@@ -49,7 +49,7 @@ Full pack on some boxes: `/workspace/ops-graph/jobs/deb2nix-generator/prior-art.
 - Flake app: `nix run .#deb2nix -- ./app.deb` and URL + `--out`. Prefetched vendor blobs: `--src-url` stamps `fetchurl` without copying the `.deb` into the output.
 - Unpack: `dpkg-deb` first, `ar`+`tar` fallback.
 - `control` parse, file inventory, ELF `DT_NEEDED`, builtin `.so` → nixpkgs map, optional `nix-locate`.
-- **cli profile emit is complete**: `stdenv.mkDerivation` + `autoPatchelfHook` + `dpkg-deb -x` + hash-pinned `src`.
+- **cli profile emit is complete**: `stdenv.mkDerivation` + `autoPatchelfHook` + `dpkg-deb --fsys-tarfile` (no setuid unpack) + hash-pinned `src`.
 - **electron / chromium-browser userland emit**: same unpack + `autoPatchelfHook` + `wrapGAppsHook3`. Does **not** add `--no-sandbox`. `chrome-sandbox` is mode 0755, never setuid. GUI smoke is still a later NixOS+Hyprland step.
 - Classifier **does not default to Electron**. First-class profiles:
   - `electron`: `app.asar` / `app.asar.unpacked`, names like `code` / `grok-bot`

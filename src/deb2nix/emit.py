@@ -305,7 +305,7 @@ stdenv.mkDerivation (finalAttrs: {{
 
   unpackPhase = ''
     runHook preUnpack
-    dpkg-deb -x "$src" .
+    dpkg-deb --fsys-tarfile "$src" | tar -x --no-same-owner --no-same-permissions
     runHook postUnpack
   '';
 
@@ -391,7 +391,7 @@ stdenv.mkDerivation (finalAttrs: {{
 
   unpackPhase = ''
     runHook preUnpack
-    dpkg-deb -x "$src" .
+    dpkg-deb --fsys-tarfile "$src" | tar -x --no-same-owner --no-same-permissions
     runHook postUnpack
   '';
 
