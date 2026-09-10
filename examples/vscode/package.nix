@@ -153,7 +153,7 @@ stdenv.mkDerivation (finalAttrs: {
     find "$out" -name chrome-sandbox -type f -exec chmod 0755 {} \; || true
     mkdir -p "$out/bin"
     if [ -z "$(find "$out/bin" -mindepth 1 -maxdepth 1 \( -type f -o -xtype f \) -print -quit 2>/dev/null)" ]; then
-      exe="$(find "$out/opt" "$out/share" -maxdepth 3 -type f -name "code" 2>/dev/null | head -n 1 || true)"
+      exe="$(find "$out/opt" "$out/share" -maxdepth 3 -type f -executable -name "code" 2>/dev/null | head -n 1 || true)"
       if [ -n "$exe" ]; then
         ln -s "$exe" "$out/bin/code" || true
       fi
@@ -170,7 +170,7 @@ stdenv.mkDerivation (finalAttrs: {
   postFixup = ''
     if [ -n "''${gappsWrapperArgs-}" ]; then
       for bin in "$out/bin"/*; do
-        if [ -e "$bin" ]; then
+        if [ -e "$bin" ] && [ -x "$bin" ]; then
           wrapProgram "$bin" "''${gappsWrapperArgs[@]}" || true
         fi
       done
