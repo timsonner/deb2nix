@@ -47,10 +47,13 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 bash scripts/smoke.sh           # generate cli expr + nix build + run hello
 ```
 
-Expected:
+Expected (verified on the Phase 1 cloud VM):
 
+- `nix build .#deb2nix` installs `deb2nix` and runs the 26 unit tests in `installCheckPhase`.
 - `hello-deb2nix` profile `cli` → store path with `bin/hello-deb2nix` printing `hello from deb2nix fixture`.
-- `fake-electron-app` profile `electron` → `package.nix` contains `throw`.
+- `fake-electron-app` profile `electron` → `package.nix` `throw`s on `nix eval`.
+- `fake-displaylink` profile `driver` / subtype `displaylink` → `throw` (no kernel load).
+- URL + `--out` emits `fetchurl { url = ...; hash = "sha256-…"; }`.
 
 ## Next steps (Phase 2 — NixOS + Hyprland VM)
 

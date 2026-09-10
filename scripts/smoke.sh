@@ -3,7 +3,6 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-export PYTHONPATH="$ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 export PATH="/nix/var/nix/profiles/default/bin:$PATH"
 
 if [[ ! -f "$ROOT/fixtures/hello-deb2nix_0.1.0_amd64.deb" ]]; then
@@ -12,7 +11,7 @@ fi
 
 OUT="${TMPDIR:-/tmp}/deb2nix-smoke-hello"
 rm -rf "$OUT"
-python3 -m deb2nix "$ROOT/fixtures/hello-deb2nix_0.1.0_amd64.deb" --out "$OUT" --skip-locate
+nix run "$ROOT"#deb2nix -- "$ROOT/fixtures/hello-deb2nix_0.1.0_amd64.deb" --out "$OUT" --skip-locate
 
 echo "---- generated package.nix ----"
 cat "$OUT/package.nix"
@@ -25,7 +24,7 @@ STORE="$(cat "$OUT/store-path.txt")"
 echo "---- classifier electron vs cli ----"
 EOUT="${TMPDIR:-/tmp}/deb2nix-smoke-electron"
 rm -rf "$EOUT"
-python3 -m deb2nix "$ROOT/fixtures/fake-electron-app_0.0.1_amd64.deb" --out "$EOUT" --skip-locate
+nix run "$ROOT"#deb2nix -- "$ROOT/fixtures/fake-electron-app_0.0.1_amd64.deb" --out "$EOUT" --skip-locate
 python3 - <<PY
 import json
 from pathlib import Path
