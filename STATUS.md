@@ -110,15 +110,19 @@ bash scripts/generate-vendor-examples.sh
 nix build ./examples/google-chrome-stable   # userland only
 ```
 
-Expected:
+Verified on this cloud VM (2026-09-10), generate → `nix build` only:
 
-- `nix build .#deb2nix` installs `deb2nix` and runs unit tests in `checkPhase`.
-- `hello-deb2nix` profile `cli` → `bin/hello-deb2nix` prints `hello from deb2nix fixture`.
-- `fake-electron-app` → `electron` **userland** `package.nix` (autoPatchelf, no sandbox-disable flags).
-- `fake-chromium-browser` → `chromium-browser` userland (not lumped into electron).
-- `fake-displaylink` → `driver` / subtype `displaylink` → `throw` (no kernel load).
-- URL / `--src-url` + `--out` emits `fetchurl { url = ...; hash = "sha256-…"; }`.
-- Real DisplayLink `.deb` → `throw` + `LIMITATIONS.md` + `nixos-module.stub.nix`. `nix eval` of that package is expected to fail with the throw; that is success.
+| Tree | Result |
+| --- | --- |
+| `nix build .#deb2nix` | unit tests in checkPhase |
+| `hello-deb2nix` | prints `hello from deb2nix fixture` |
+| `examples/grok-bot` | `/bin/grok-bot` (wraps `opt/Grok Bot/grok-bot`) |
+| `examples/google-chrome-stable` | `/bin/google-chrome-stable`; Qt shim libs ignored (hook conflict) |
+| `examples/microsoft-edge-stable` | `/bin/microsoft-edge-stable`; same Qt ignore |
+| `examples/vscode` | `/bin/code` (wraps `share/code/bin/code`) |
+| `examples/displaylink-driver` | `nix eval` **throws** (EVDI/DKMS not loaded) |
+
+`chrome-sandbox` / `msedge-sandbox` in those store paths are mode `555`, not setuid. GUI smoke is still NixOS+Hyprland.
 
 ## Next steps
 

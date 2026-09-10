@@ -2,12 +2,12 @@
 
 These trees were produced by `scripts/generate-vendor-examples.sh` from `fixtures/vendor/*.deb` after the 2026-09-10 EULA approval. The `.deb` files are gitignored; `fetchurl` URLs + SRI hashes are in each `package.nix` / `report.json`.
 
-| Directory | Profile | `nix build` |
+| Directory | Profile | `nix build` (this VM, 2026-09-10) |
 | --- | --- | --- |
-| `google-chrome-stable` | `chromium-browser` | userland unpack + autoPatchelf |
-| `microsoft-edge-stable` | `chromium-browser` | userland unpack + autoPatchelf |
-| `vscode` | `electron` | userland unpack + autoPatchelf |
-| `grok-bot` | `electron` | userland unpack + autoPatchelf |
+| `google-chrome-stable` | `chromium-browser` | `/bin/google-chrome-stable` (Qt shims ignored) |
+| `microsoft-edge-stable` | `chromium-browser` | `/bin/microsoft-edge-stable` |
+| `vscode` | `electron` | `/bin/code` |
+| `grok-bot` | `electron` | `/bin/grok-bot` |
 | `displaylink-driver` | `driver` | **throws** (see `LIMITATIONS.md`) |
 | `synaptics-repository-keyring` | `fhs-fallback` (no ELF/binaries) | **throws** — APT keyring only, not the driver |
 
