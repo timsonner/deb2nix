@@ -124,6 +124,18 @@ stdenv.mkDerivation (finalAttrs: {
     if [ -d "$out/usr/bin" ] && [ ! -e "$out/bin" ]; then
       mv "$out/usr/bin" "$out/bin"
     fi
+    # Debian .debs often ship absolute /opt and /usr symlinks; retarget into $out.
+    find "$out" -type l -print0 2>/dev/null | while IFS= read -r -d $'\0' link; do
+      t="$(readlink "$link" || true)"
+      case "$t" in
+        /opt/*)
+          ln -sfn "$out$t" "$link" || true
+          ;;
+        /usr/*)
+          ln -sfn "$out''${t#/usr}" "$link" || true
+          ;;
+      esac
+    done
     # Debian wrappers often hardcode /opt and /usr.
     if [ -d "$out/bin" ]; then
       for f in "$out/bin"/*; do
@@ -138,8 +150,8 @@ stdenv.mkDerivation (finalAttrs: {
     # Never chmod u+s chrome-sandbox from this generator.
     find "$out" -name chrome-sandbox -type f -exec chmod 0755 {} \; || true
     mkdir -p "$out/bin"
-    if [ -z "$(find "$out/bin" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
-      exe="$(find "$out/opt" -maxdepth 2 -type f -name "google-chrome-stable" | head -n 1 || true)"
+    if [ -z "$(find "$out/bin" -mindepth 1 -maxdepth 1 \( -type f -o -xtype f \) -print -quit 2>/dev/null)" ]; then
+      exe="$(find "$out/opt" "$out/share" -maxdepth 3 -type f -name "google-chrome-stable" 2>/dev/null | head -n 1 || true)"
       if [ -n "$exe" ]; then
         ln -s "$exe" "$out/bin/google-chrome-stable" || true
       fi

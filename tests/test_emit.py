@@ -65,6 +65,7 @@ class EmitTests(unittest.TestCase):
             self.assertTrue((Path(td) / "NOTES.md").is_file())
             self.assertIn("dontWrapQtApps = true", package)
             self.assertIn('find "$out/opt"', package)
+            self.assertIn("ln -sfn", package)
 
     def test_chromium_browser_userland(self) -> None:
         with TemporaryDirectory() as td:
