@@ -2,6 +2,8 @@ result
 result-*
 examples/**/src.deb
 examples/**/unpacked/
+examples/**/flake.lock
+examples/**/result
 .direnv
 .envrc
 __pycache__/

@@ -58,6 +58,8 @@ class EmitTests(unittest.TestCase):
             self.assertIn("wrapGAppsHook3", package)
             self.assertNotRegex(package, r'--add-flags\s+"--no-sandbox"')
             self.assertNotRegex(package, r"wrapProgram[^\n]*--no-sandbox")
+            self.assertIn("$'\\0'", package)
+            self.assertNotIn("read -r -d ''", package)
             self.assertNotIn("throw", package.split("meta")[0])
             self.assertTrue((Path(td) / "NOTES.md").is_file())
 

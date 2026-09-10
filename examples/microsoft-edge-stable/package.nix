@@ -127,7 +127,7 @@ stdenv.mkDerivation (finalAttrs: {
         fi
       done
     fi
-    find "$out" -name '*.desktop' -type f -print0 2>/dev/null | while IFS= read -r -d '' desk; do
+    find "$out" -name '*.desktop' -type f -print0 2>/dev/null | while IFS= read -r -d $'\0' desk; do
       substituteInPlace "$desk" --replace-quiet /opt/ "$out/opt/" --replace-quiet /usr/ "$out/" || true
     done
     # Never chmod u+s chrome-sandbox from this generator.
