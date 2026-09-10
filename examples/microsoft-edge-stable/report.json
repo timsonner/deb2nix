@@ -1,0 +1,381 @@
+{
+  "deb2nix": "0.1.0",
+  "pname": "microsoft-edge-stable",
+  "version": "152.0.4191.66-1",
+  "architecture": "amd64",
+  "nixSystem": "x86_64-linux",
+  "profile": {
+    "profile": "chromium-browser",
+    "confidence": "high",
+    "reasons": [
+      "package name/description matches Chromium browser (microsoft-edge-stable)",
+      "chromium payload files (no app.asar): icudtl.dat, resources.pak"
+    ],
+    "evidence": {
+      "files": [
+        "opt/microsoft/msedge/icudtl.dat",
+        "opt/microsoft/msedge/resources.pak"
+      ],
+      "package": [
+        "microsoft-edge-stable"
+      ]
+    },
+    "subtype": "chromium-browser",
+    "warnings": []
+  },
+  "unfree": true,
+  "licenseExpr": "lib.licenses.unfree",
+  "source": {
+    "kind": "url",
+    "url": "https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/microsoft-edge-stable_152.0.4191.66-1_amd64.deb",
+    "filename": "microsoft-edge-stable_152.0.4191.66-1_amd64.deb",
+    "hash": "sha256-GGwZ+dYHnRdO+7TvMxzMHhHRObb3qOo7DbdfmxfiXw0="
+  },
+  "control": {
+    "package": "microsoft-edge-stable",
+    "homepage": "",
+    "maintainer": "Microsoft Edge for Linux Team <EdgeLinuxDev@microsoft.com>",
+    "depends": "ca-certificates, fonts-liberation, libasound2 (>= 1.0.17), libatk-bridge2.0-0 (>= 2.5.3), libatk1.0-0 (>= 2.11.90), libatspi2.0-0 (>= 2.9.90), libc6 (>= 2.25), libcairo2 (>= 1.14.0), libcups2 (>= 1.7.0), libcurl3-gnutls | libcurl3-nss | libcurl4 | libcurl3, libdbus-1-3 (>= 1.9.14), libexpat1 (>= 2.1~beta3), libgbm1 (>= 17.1.0~rc2), libglib2.0-0 (>= 2.39.4), libgtk-3-0 (>= 3.9.10) | libgtk-4-1, libnspr4 (>= 2:4.9-2~), libnss3 (>= 2:3.35), libpango-1.0-0 (>= 1.14.0), libudev1 (>= 183), libuuid1 (>= 2.16), libvulkan1, libx11-6 (>= 2:1.4.99.1), libxcb1 (>= 1.9.2), libxcomposite1 (>= 1:0.4.4-1), libxdamage1 (>= 1:1.1), libxext6, libxfixes3, libxkbcommon0 (>= 0.5.0), libxrandr2, wget, xdg-utils (>= 1.0.2)",
+    "section": "web",
+    "license": "",
+    "description": "The web browser from Microsoft"
+  },
+  "mapping": {
+    "locateAvailable": false,
+    "buildInputs": [
+      "qt5.qtbase",
+      "qt6.qtbase",
+      "xorg.libX11",
+      "xorg.libXcomposite",
+      "xorg.libXdamage",
+      "xorg.libXext",
+      "xorg.libXfixes",
+      "xorg.libXrandr",
+      "alsa-lib",
+      "at-spi2-atk",
+      "at-spi2-core",
+      "cairo",
+      "cups",
+      "dbus",
+      "expat",
+      "mesa",
+      "glib",
+      "nspr",
+      "nss",
+      "pango",
+      "systemd",
+      "util-linux",
+      "xorg.libxcb",
+      "libxkbcommon"
+    ],
+    "unmapped": [],
+    "bundled": [],
+    "libs": [
+      {
+        "lib": "ld-linux-x86-64.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libQt5Core.so.5",
+        "pkg": "qt5.qtbase",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libQt5Gui.so.5",
+        "pkg": "qt5.qtbase",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libQt5Widgets.so.5",
+        "pkg": "qt5.qtbase",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libQt6Core.so.6",
+        "pkg": "qt6.qtbase",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libQt6Gui.so.6",
+        "pkg": "qt6.qtbase",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libQt6Widgets.so.6",
+        "pkg": "qt6.qtbase",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libX11.so.6",
+        "pkg": "xorg.libX11",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXcomposite.so.1",
+        "pkg": "xorg.libXcomposite",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXdamage.so.1",
+        "pkg": "xorg.libXdamage",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXext.so.6",
+        "pkg": "xorg.libXext",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXfixes.so.3",
+        "pkg": "xorg.libXfixes",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXrandr.so.2",
+        "pkg": "xorg.libXrandr",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libasound.so.2",
+        "pkg": "alsa-lib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatk-1.0.so.0",
+        "pkg": "at-spi2-atk",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatk-bridge-2.0.so.0",
+        "pkg": "at-spi2-atk",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatspi.so.0",
+        "pkg": "at-spi2-core",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libc.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libcairo.so.2",
+        "pkg": "cairo",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libcups.so.2",
+        "pkg": "cups",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libdbus-1.so.3",
+        "pkg": "dbus",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libdl.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libexpat.so.1",
+        "pkg": "expat",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgbm.so.1",
+        "pkg": "mesa",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgcc_s.so.1",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libgio-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libglib-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgobject-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libm.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libnspr4.so",
+        "pkg": "nspr",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libnss3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libnssutil3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libpango-1.0.so.0",
+        "pkg": "pango",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libpthread.so.0",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libresolv.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libsmime3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libstdc++.so.6",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libudev.so.1",
+        "pkg": "systemd",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libuuid.so.1",
+        "pkg": "util-linux",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libxcb.so.1",
+        "pkg": "xorg.libxcb",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libxkbcommon.so.0",
+        "pkg": "libxkbcommon",
+        "source": "builtin",
+        "note": ""
+      }
+    ]
+  },
+  "needed": [
+    "ld-linux-x86-64.so.2",
+    "libQt5Core.so.5",
+    "libQt5Gui.so.5",
+    "libQt5Widgets.so.5",
+    "libQt6Core.so.6",
+    "libQt6Gui.so.6",
+    "libQt6Widgets.so.6",
+    "libX11.so.6",
+    "libXcomposite.so.1",
+    "libXdamage.so.1",
+    "libXext.so.6",
+    "libXfixes.so.3",
+    "libXrandr.so.2",
+    "libasound.so.2",
+    "libatk-1.0.so.0",
+    "libatk-bridge-2.0.so.0",
+    "libatspi.so.0",
+    "libc.so.6",
+    "libcairo.so.2",
+    "libcups.so.2",
+    "libdbus-1.so.3",
+    "libdl.so.2",
+    "libexpat.so.1",
+    "libgbm.so.1",
+    "libgcc_s.so.1",
+    "libgio-2.0.so.0",
+    "libglib-2.0.so.0",
+    "libgobject-2.0.so.0",
+    "libm.so.6",
+    "libnspr4.so",
+    "libnss3.so",
+    "libnssutil3.so",
+    "libpango-1.0.so.0",
+    "libpthread.so.0",
+    "libresolv.so.2",
+    "libsmime3.so",
+    "libstdc++.so.6",
+    "libudev.so.1",
+    "libuuid.so.1",
+    "libxcb.so.1",
+    "libxkbcommon.so.0"
+  ],
+  "binaries": [
+    "opt/microsoft/msedge/cron/microsoft-edge",
+    "opt/microsoft/msedge/microsoft-edge",
+    "opt/microsoft/msedge/msedge",
+    "opt/microsoft/msedge/msedge-management-service",
+    "opt/microsoft/msedge/msedge-sandbox",
+    "opt/microsoft/msedge/msedge_crashpad_handler"
+  ],
+  "mainProgram": "microsoft-edge",
+  "constraints": {
+    "noPublicNixpkgsPublish": true,
+    "unfreeExplicit": true,
+    "hashPinned": true,
+    "honestFailureOverSilentFhs": true,
+    "noDisplayLinkKernelLoad": true
+  }
+}

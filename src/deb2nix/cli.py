@@ -41,6 +41,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Copy the unpacked tree into the output directory.",
     )
     p.add_argument(
+        "--src-url",
+        default=None,
+        help="Record this URL in fetchurl (use with a local .deb after prefetch).",
+    )
+    p.add_argument(
         "--json",
         action="store_true",
         help="Print report.json to stdout after generation.",
@@ -61,6 +66,7 @@ def main(argv: list[str] | None = None) -> int:
             profile=args.profile,
             skip_locate=args.skip_locate,
             keep_unpack=args.keep_unpack,
+            src_url=args.src_url,
         )
     except (FileNotFoundError, ValueError, OSError) as exc:
         print(f"deb2nix: error: {exc}", file=sys.stderr)
@@ -99,8 +105,12 @@ def _print_summary(result) -> None:
     print("  wrote   :")
     for path in result.written:
         print(f"            {path}")
-    if c.profile != "cli":
-        print("  note    : non-cli profile is stubbed (package.nix throws). See STATUS.md.")
+    if c.profile in {"electron", "chromium-browser"}:
+        print("  note    : userland expr emitted (autoPatchelf). No --no-sandbox. GUI smoke is Hyprland.")
+    elif c.profile in {"driver", "system"}:
+        print("  note    : driver/system stub (no DKMS/insmod). See LIMITATIONS.md.")
+    elif c.profile != "cli":
+        print("  note    : profile is stubbed (package.nix throws). See STATUS.md.")
     if c.warnings:
         for w in c.warnings:
             print(f"  warn    : {w}")

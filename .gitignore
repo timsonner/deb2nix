@@ -1,5 +1,7 @@
 result
 result-*
+examples/**/src.deb
+examples/**/unpacked/
 .direnv
 .envrc
 __pycache__/

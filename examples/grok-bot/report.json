@@ -1,0 +1,351 @@
+{
+  "deb2nix": "0.1.0",
+  "pname": "grok-bot",
+  "version": "0.47.0",
+  "architecture": "amd64",
+  "nixSystem": "x86_64-linux",
+  "profile": {
+    "profile": "electron",
+    "confidence": "high",
+    "reasons": [
+      "electron payload: app.asar",
+      "found app.asar.unpacked",
+      "electron/chromium helper files: licenses.chromium.html, chrome_crashpad_handler, libvk_swiftshader.so, app.asar, snapshot_blob.bin, v8_context_snapshot.bin, vk_swiftshader_icd.json",
+      "package name/description matches Electron app (grok-bot)"
+    ],
+    "evidence": {
+      "files": [
+        "opt/Grok Bot/resources/app.asar",
+        "opt/Grok Bot/LICENSES.chromium.html",
+        "opt/Grok Bot/chrome_crashpad_handler",
+        "opt/Grok Bot/libvk_swiftshader.so",
+        "opt/Grok Bot/resources/app.asar",
+        "opt/Grok Bot/snapshot_blob.bin",
+        "opt/Grok Bot/v8_context_snapshot.bin",
+        "opt/Grok Bot/vk_swiftshader_icd.json"
+      ],
+      "package": [
+        "grok-bot"
+      ]
+    },
+    "subtype": "electron",
+    "warnings": []
+  },
+  "unfree": true,
+  "licenseExpr": "lib.licenses.unfree",
+  "source": {
+    "kind": "url",
+    "url": "https://downloads.cursor.com/grokbot/stable/c1e7d7a46549956d25f53e9c0b9f59666e03aa3a/linux/x64/grok-bot_0.47.0_amd64.deb",
+    "filename": "grok-bot_0.47.0_amd64.deb",
+    "hash": "sha256-EcoPUaU1uXr1GjUq35wPns0uGwQwpprpRRtoinoGWAg="
+  },
+  "control": {
+    "package": "grok-bot",
+    "homepage": "https://cursor.com",
+    "maintainer": "SpaceXAI <hi@cursor.com>",
+    "depends": "libgtk-3-0, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0, libuuid1, libsecret-1-0, libasound2t64 | libasound2, libgbm1, libxkbcommon0, libdrm2",
+    "section": "default",
+    "license": "unknown",
+    "description": "grok-bot"
+  },
+  "mapping": {
+    "locateAvailable": false,
+    "buildInputs": [
+      "xorg.libX11",
+      "xorg.libXcomposite",
+      "xorg.libXdamage",
+      "xorg.libXext",
+      "xorg.libXfixes",
+      "xorg.libXrandr",
+      "alsa-lib",
+      "at-spi2-atk",
+      "at-spi2-core",
+      "cairo",
+      "cups",
+      "dbus",
+      "expat",
+      "mesa",
+      "glib",
+      "gtk3",
+      "nspr",
+      "nss",
+      "pango",
+      "systemd",
+      "xorg.libxcb",
+      "libxkbcommon"
+    ],
+    "unmapped": [],
+    "bundled": [
+      "libffmpeg.so"
+    ],
+    "libs": [
+      {
+        "lib": "ld-linux-x86-64.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libX11.so.6",
+        "pkg": "xorg.libX11",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXcomposite.so.1",
+        "pkg": "xorg.libXcomposite",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXdamage.so.1",
+        "pkg": "xorg.libXdamage",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXext.so.6",
+        "pkg": "xorg.libXext",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXfixes.so.3",
+        "pkg": "xorg.libXfixes",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXrandr.so.2",
+        "pkg": "xorg.libXrandr",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libasound.so.2",
+        "pkg": "alsa-lib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatk-1.0.so.0",
+        "pkg": "at-spi2-atk",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatk-bridge-2.0.so.0",
+        "pkg": "at-spi2-atk",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatspi.so.0",
+        "pkg": "at-spi2-core",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libc.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libcairo.so.2",
+        "pkg": "cairo",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libcups.so.2",
+        "pkg": "cups",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libdbus-1.so.3",
+        "pkg": "dbus",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libdl.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libexpat.so.1",
+        "pkg": "expat",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libffmpeg.so",
+        "pkg": null,
+        "source": "bundled",
+        "note": "shipped inside the .deb"
+      },
+      {
+        "lib": "libgbm.so.1",
+        "pkg": "mesa",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgcc_s.so.1",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libgio-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libglib-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgobject-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgtk-3.so.0",
+        "pkg": "gtk3",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libm.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libnspr4.so",
+        "pkg": "nspr",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libnss3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libnssutil3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libpango-1.0.so.0",
+        "pkg": "pango",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libpthread.so.0",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libsmime3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libstdc++.so.6",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libudev.so.1",
+        "pkg": "systemd",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libxcb.so.1",
+        "pkg": "xorg.libxcb",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libxkbcommon.so.0",
+        "pkg": "libxkbcommon",
+        "source": "builtin",
+        "note": ""
+      }
+    ]
+  },
+  "needed": [
+    "ld-linux-x86-64.so.2",
+    "libX11.so.6",
+    "libXcomposite.so.1",
+    "libXdamage.so.1",
+    "libXext.so.6",
+    "libXfixes.so.3",
+    "libXrandr.so.2",
+    "libasound.so.2",
+    "libatk-1.0.so.0",
+    "libatk-bridge-2.0.so.0",
+    "libatspi.so.0",
+    "libc.so.6",
+    "libcairo.so.2",
+    "libcups.so.2",
+    "libdbus-1.so.3",
+    "libdl.so.2",
+    "libexpat.so.1",
+    "libffmpeg.so",
+    "libgbm.so.1",
+    "libgcc_s.so.1",
+    "libgio-2.0.so.0",
+    "libglib-2.0.so.0",
+    "libgobject-2.0.so.0",
+    "libgtk-3.so.0",
+    "libm.so.6",
+    "libnspr4.so",
+    "libnss3.so",
+    "libnssutil3.so",
+    "libpango-1.0.so.0",
+    "libpthread.so.0",
+    "libsmime3.so",
+    "libstdc++.so.6",
+    "libudev.so.1",
+    "libxcb.so.1",
+    "libxkbcommon.so.0"
+  ],
+  "binaries": [
+    "opt/Grok Bot/chrome-sandbox",
+    "opt/Grok Bot/chrome_crashpad_handler",
+    "opt/Grok Bot/grok-bot",
+    "opt/Grok Bot/libvulkan.so.1",
+    "opt/Grok Bot/resources/app.asar.unpacked/dist/deps/cursor-proclist/build/Release/cursor_proclist.node",
+    "opt/Grok Bot/resources/app.asar.unpacked/dist/deps/node-gyp-build/bin.js",
+    "opt/Grok Bot/resources/app.asar.unpacked/dist/deps/node-gyp-build/build-test.js",
+    "opt/Grok Bot/resources/app.asar.unpacked/dist/deps/node-gyp-build/optional.js",
+    "opt/Grok Bot/resources/app.asar.unpacked/dist/deps/tree-sitter/build/Release/tree_sitter_runtime_binding.node",
+    "opt/Grok Bot/resources/app.asar.unpacked/dist/deps/web-tree-sitter/tree-sitter.wasm"
+  ],
+  "mainProgram": "grok-bot",
+  "constraints": {
+    "noPublicNixpkgsPublish": true,
+    "unfreeExplicit": true,
+    "hashPinned": true,
+    "honestFailureOverSilentFhs": true,
+    "noDisplayLinkKernelLoad": true
+  }
+}

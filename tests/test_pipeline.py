@@ -35,7 +35,11 @@ class FixturePipelineTests(unittest.TestCase):
         with TemporaryDirectory() as td:
             result = run(str(ELECTRON), Path(td), skip_locate=True)
             self.assertEqual(result.classification.profile, "electron")
-            self.assertIn("throw", (Path(td) / "package.nix").read_text())
+            package = (Path(td) / "package.nix").read_text()
+            self.assertIn("autoPatchelfHook", package)
+            self.assertNotRegex(package, r'--add-flags\s+"--no-sandbox"')
+            self.assertNotRegex(package, r"wrapProgram[^\n]*--no-sandbox")
+            self.assertIn("lib.licenses.mit", package)
 
     def test_chromium_browser_markers(self) -> None:
         if not CHROMIUM.is_file():
@@ -43,7 +47,11 @@ class FixturePipelineTests(unittest.TestCase):
         with TemporaryDirectory() as td:
             result = run(str(CHROMIUM), Path(td), skip_locate=True)
             self.assertEqual(result.classification.profile, "chromium-browser")
-            self.assertIn("throw", (Path(td) / "package.nix").read_text())
+            package = (Path(td) / "package.nix").read_text()
+            self.assertIn("autoPatchelfHook", package)
+            self.assertNotRegex(package, r'--add-flags\s+"--no-sandbox"')
+            self.assertNotRegex(package, r"wrapProgram[^\n]*--no-sandbox")
+            self.assertIn("lib.licenses.mit", package)
 
     def test_driver_markers(self) -> None:
         with TemporaryDirectory() as td:
@@ -52,6 +60,20 @@ class FixturePipelineTests(unittest.TestCase):
             text = (Path(td) / "package.nix").read_text()
             self.assertIn("throw", text)
             self.assertIn("DKMS", text)
+            self.assertTrue((Path(td) / "LIMITATIONS.md").is_file())
+
+    def test_src_url_stamps_fetchurl_without_copying_deb(self) -> None:
+        with TemporaryDirectory() as td:
+            run(
+                str(HELLO),
+                Path(td),
+                skip_locate=True,
+                src_url="https://example.com/hello-deb2nix.deb",
+            )
+            package = (Path(td) / "package.nix").read_text()
+            self.assertIn("fetchurl", package)
+            self.assertIn("https://example.com/hello-deb2nix.deb", package)
+            self.assertFalse((Path(td) / "src.deb").exists())
 
 
 if __name__ == "__main__":

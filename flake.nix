@@ -1,6 +1,11 @@
 {
   description = "deb2nix — package-agnostic Debian .deb → Nix generator";
 
+  # The generator is MIT. Generated consumer flakes may set allowUnfreePredicate
+  # for a single pname. Tim approval 2026-09-10 accepted unfree EULAs for
+  # Chrome, Edge, VS Code, Grok Bot, and DisplayLink fixture analysis.
+  # This flake does not fetch those vendor blobs at eval time.
+
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs =
@@ -46,6 +51,8 @@
                   "__pycache__"
                   ".mypy_cache"
                   "generated"
+                  "vendor"
+                  "examples"
                 ]);
             };
             pyproject = true;

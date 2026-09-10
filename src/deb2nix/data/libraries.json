@@ -115,6 +115,7 @@
     "libxshmfence.so.1": "libxshmfence",
     "libxkbcommon.so.0": "libxkbcommon",
     "libxkbcommon-x11.so.0": "libxkbcommon",
+    "libxkbfile.so.1": "xorg.libxkbfile",
     "libdrm.so.2": "libdrm",
     "libgbm.so.1": "mesa",
     "libGL.so.1": "libglvnd",

@@ -50,22 +50,26 @@ class EmitTests(unittest.TestCase):
             self.assertNotIn(".hello-deb2nix =", flake)
             self.assertTrue(any(p.name == "flake.nix" for p in paths))
 
-    def test_electron_throws(self) -> None:
+    def test_electron_userland_not_sandbox(self) -> None:
         with TemporaryDirectory() as td:
             emit_all(Path(td), _ctx("electron"))
             package = (Path(td) / "package.nix").read_text()
-            self.assertIn("throw", package)
-            self.assertIn("Electron", package)
-            self.assertTrue((Path(td) / "package.stub.nix").is_file())
+            self.assertIn("autoPatchelfHook", package)
+            self.assertIn("wrapGAppsHook3", package)
+            self.assertNotRegex(package, r'--add-flags\s+"--no-sandbox"')
+            self.assertNotRegex(package, r"wrapProgram[^\n]*--no-sandbox")
+            self.assertNotIn("throw", package.split("meta")[0])
+            self.assertTrue((Path(td) / "NOTES.md").is_file())
 
-    def test_chromium_browser_throws(self) -> None:
+    def test_chromium_browser_userland(self) -> None:
         with TemporaryDirectory() as td:
             emit_all(Path(td), _ctx("chromium-browser"))
             package = (Path(td) / "package.nix").read_text()
-            self.assertIn("throw", package)
+            self.assertIn("autoPatchelfHook", package)
             self.assertIn("chromium-browser", package)
-            self.assertIn("Chrome", package)
-            self.assertTrue((Path(td) / "package.stub.nix").is_file())
+            self.assertNotRegex(package, r'--add-flags\s+"--no-sandbox"')
+            self.assertNotRegex(package, r"wrapProgram[^\n]*--no-sandbox")
+            self.assertTrue((Path(td) / "NOTES.md").is_file())
 
     def test_driver_throws_no_kernel_load(self) -> None:
         with TemporaryDirectory() as td:
@@ -74,6 +78,11 @@ class EmitTests(unittest.TestCase):
             self.assertIn("throw", package)
             self.assertIn("DKMS", package)
             self.assertIn("DisplayLink", package)
+            self.assertTrue((Path(td) / "LIMITATIONS.md").is_file())
+            self.assertTrue((Path(td) / "nixos-module.stub.nix").is_file())
+            module = (Path(td) / "nixos-module.stub.nix").read_text()
+            self.assertIn("hardware.video.displaylink", module)
+            self.assertIn("insmod", module.lower() + package.lower() + (Path(td) / "LIMITATIONS.md").read_text().lower())
 
     def test_fhs_not_silent(self) -> None:
         with TemporaryDirectory() as td:

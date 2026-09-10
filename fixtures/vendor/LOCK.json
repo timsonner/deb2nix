@@ -1,0 +1,47 @@
+{
+  "approval": "2026-09-10 Tim: all unfree/EULAs accepted",
+  "fetched": [
+    {
+      "file": "grok-bot_0.47.0_amd64.deb",
+      "url": "https://downloads.cursor.com/grokbot/stable/c1e7d7a46549956d25f53e9c0b9f59666e03aa3a/linux/x64/grok-bot_0.47.0_amd64.deb",
+      "bytes": 103367560,
+      "sri": "sha256-EcoPUaU1uXr1GjUq35wPns0uGwQwpprpRRtoinoGWAg=",
+      "sha256_hex": "11ca0f51a535b97af51a352adf9c0f9ecd2e1b0430a69ae9451b688a7a065808"
+    },
+    {
+      "file": "google-chrome-stable_current_amd64.deb",
+      "url": "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
+      "bytes": 141931876,
+      "sri": "sha256-m7ROMwMcLyhXzza0NDBRoS+TBY5LeB48djE9+H9sjTI=",
+      "sha256_hex": "9bb44e33031c2f2857cf36b4343051a12f93058e4b781e3c76313df87f6c8d32"
+    },
+    {
+      "file": "code_amd64.deb",
+      "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/645f29cc3176500b4b5762ba887cf2a7f0ffdf2c/code_1.137.0-1788902055_amd64.deb",
+      "bytes": 237130638,
+      "sri": "sha256-/U3/csRFmNOsuIW0SCVvXYLPU/WVONl/x9PI2NnVdNM=",
+      "sha256_hex": "fd4dff72c44598d3acb885b448256f5d82cf53f59538d97fc7d3c8d8d9d574d3"
+    },
+    {
+      "file": "microsoft-edge-stable_152.0.4191.66-1_amd64.deb",
+      "url": "https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/microsoft-edge-stable_152.0.4191.66-1_amd64.deb",
+      "bytes": 195767486,
+      "sri": "sha256-GGwZ+dYHnRdO+7TvMxzMHhHRObb3qOo7DbdfmxfiXw0=",
+      "sha256_hex": "186c19f9d6079d174efbb4ef331ccc1e11d139b6f7a8ea3b0db75f9b17e25f0d"
+    },
+    {
+      "file": "displaylink-driver_6.3.0-0ubuntu1~ppa3~noble1_amd64.deb",
+      "url": "https://ppa.launchpadcontent.net/synaptics-displaylink/displaylink-driver/ubuntu/pool/main/d/displaylink-driver/displaylink-driver_6.3.0-0ubuntu1~ppa3~noble1_amd64.deb",
+      "bytes": 7301458,
+      "sri": "sha256-zHVC+5aQb5cPwTVO2DwKhRVH96RoCa2zNlmKDjGxWKM=",
+      "sha256_hex": "cc7542fb96906f970fc1354ed83c0a851547f7a46809adb336598a0e31b158a3"
+    },
+    {
+      "file": "synaptics-repository-keyring.deb",
+      "url": "https://www.synaptics.com/sites/default/files/Ubuntu/pool/stable/main/all/synaptics-repository-keyring.deb",
+      "bytes": 2842,
+      "sri": "sha256-+DMAkohI8vdgX/hDhGcmcBnHzFGB7Iueq8fx4Fy/rL4=",
+      "sha256_hex": "f83300928848f2f7605ff8438467267019c7cc5181ec8b9eabc7f1e05cbfacbe"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+# Generated examples (hash-pinned, no vendor blobs)
+
+These trees were produced by `scripts/generate-vendor-examples.sh` from `fixtures/vendor/*.deb` after the 2026-09-10 EULA approval. The `.deb` files are gitignored; `fetchurl` URLs + SRI hashes are in each `package.nix` / `report.json`.
+
+| Directory | Profile | `nix build` |
+| --- | --- | --- |
+| `google-chrome-stable` | `chromium-browser` | userland unpack + autoPatchelf |
+| `microsoft-edge-stable` | `chromium-browser` | userland unpack + autoPatchelf |
+| `vscode` | `electron` | userland unpack + autoPatchelf |
+| `grok-bot` | `electron` | userland unpack + autoPatchelf |
+| `displaylink-driver` | `driver` | **throws** (see `LIMITATIONS.md`) |
+| `synaptics-repository-keyring` | `fhs-fallback` (no ELF/binaries) | **throws** — APT keyring only, not the driver |
+
+Unfree is gated with `allowUnfreePredicate` for that pname only.
+
+```bash
+nix build ./examples/google-chrome-stable
+# DisplayLink is supposed to fail:
+nix eval ./examples/displaylink-driver#packages.x86_64-linux.default
+```
+
+GUI smoke (Hyprland) is out of scope for these expressions. Regenerating:
+
+```bash
+bash scripts/generate-vendor-examples.sh
+```

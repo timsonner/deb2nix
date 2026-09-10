@@ -1,0 +1,145 @@
+{
+  "deb2nix": "0.1.0",
+  "pname": "displaylink-driver",
+  "version": "6.3.0-0ubuntu1~ppa3~noble1",
+  "architecture": "amd64",
+  "nixSystem": "x86_64-linux",
+  "profile": {
+    "profile": "driver",
+    "confidence": "high",
+    "reasons": [
+      "name/description matches driver token 'displaylink'",
+      "name/description matches driver token 'evdi'",
+      "name/description matches driver token 'dkms'"
+    ],
+    "evidence": {
+      "kernel_modules": [],
+      "hints": [
+        "name/description matches driver token 'displaylink'",
+        "name/description matches driver token 'evdi'",
+        "name/description matches driver token 'dkms'"
+      ]
+    },
+    "subtype": "displaylink",
+    "warnings": [
+      "deb2nix will not emit an expression that loads kernel modules or installs DKMS (including DisplayLink/EVDI)."
+    ]
+  },
+  "unfree": true,
+  "licenseExpr": "lib.licenses.unfree",
+  "source": {
+    "kind": "url",
+    "url": "https://ppa.launchpadcontent.net/synaptics-displaylink/displaylink-driver/ubuntu/pool/main/d/displaylink-driver/displaylink-driver_6.3.0-0ubuntu1~ppa3~noble1_amd64.deb",
+    "filename": "displaylink-driver_6.3.0-0ubuntu1~ppa3~noble1_amd64.deb",
+    "hash": "sha256-zHVC+5aQb5cPwTVO2DwKhRVH96RoCa2zNlmKDjGxWKM="
+  },
+  "control": {
+    "package": "displaylink-driver",
+    "homepage": "https://www.synaptics.com/products/displaylink-graphics/downloads/ubuntu",
+    "maintainer": "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+    "depends": "libc6 (>= 2.34), libgcc-s1 (>= 3.0), libstdc++6 (>= 9), libusb-1.0-0 (>= 2:1.0.23~), libuuid1 (>= 2.16), evdi-dkms (>= 1.12.0) | evdi (>= 1.12.0), libevdi1 (>= 1.12.0) | evdi (>= 1.12.0)",
+    "section": "multiverse/video",
+    "license": "",
+    "description": "DisplayLink USB 3.x display driver"
+  },
+  "mapping": {
+    "locateAvailable": false,
+    "buildInputs": [
+      "libusb1",
+      "util-linux"
+    ],
+    "unmapped": [],
+    "bundled": [],
+    "libs": [
+      {
+        "lib": "ld-linux-x86-64.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libc.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libdl.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libgcc_s.so.1",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libm.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libpthread.so.0",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "librt.so.1",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libstdc++.so.6",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libusb-1.0.so.0",
+        "pkg": "libusb1",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libuuid.so.1",
+        "pkg": "util-linux",
+        "source": "builtin",
+        "note": ""
+      }
+    ]
+  },
+  "needed": [
+    "ld-linux-x86-64.so.2",
+    "libc.so.6",
+    "libdl.so.2",
+    "libgcc_s.so.1",
+    "libm.so.6",
+    "libpthread.so.0",
+    "librt.so.1",
+    "libstdc++.so.6",
+    "libusb-1.0.so.0",
+    "libuuid.so.1"
+  ],
+  "binaries": [
+    "usr/bin/DLSupportTool",
+    "usr/bin/displaylink-installer",
+    "usr/lib/displaylink-driver/DisplayLinkManager",
+    "usr/lib/displaylink-driver/displaylink-installer.sh",
+    "usr/lib/displaylink-driver/dlm_weston_wrapper.sh",
+    "usr/lib/displaylink-driver/suspend.sh",
+    "usr/lib/displaylink-driver/udev.sh"
+  ],
+  "mainProgram": "DLSupportTool",
+  "constraints": {
+    "noPublicNixpkgsPublish": true,
+    "unfreeExplicit": true,
+    "hashPinned": true,
+    "honestFailureOverSilentFhs": true,
+    "noDisplayLinkKernelLoad": true
+  }
+}

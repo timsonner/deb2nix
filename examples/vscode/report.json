@@ -1,0 +1,494 @@
+{
+  "deb2nix": "0.1.0",
+  "pname": "code",
+  "version": "1.137.0-1788902055",
+  "architecture": "amd64",
+  "nixSystem": "x86_64-linux",
+  "profile": {
+    "profile": "electron",
+    "confidence": "medium",
+    "reasons": [
+      "electron/chromium helper files: licenses.chromium.html, chrome_crashpad_handler, libvk_swiftshader.so, snapshot_blob.bin, v8_context_snapshot.bin, vk_swiftshader_icd.json",
+      "package name/description matches Electron app (code)"
+    ],
+    "evidence": {
+      "files": [
+        "usr/share/code/LICENSES.chromium.html",
+        "usr/share/code/chrome_crashpad_handler",
+        "usr/share/code/libvk_swiftshader.so",
+        "usr/share/code/snapshot_blob.bin",
+        "usr/share/code/v8_context_snapshot.bin",
+        "usr/share/code/vk_swiftshader_icd.json"
+      ],
+      "package": [
+        "code"
+      ]
+    },
+    "subtype": "electron",
+    "warnings": []
+  },
+  "unfree": true,
+  "licenseExpr": "lib.licenses.unfree",
+  "source": {
+    "kind": "url",
+    "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/645f29cc3176500b4b5762ba887cf2a7f0ffdf2c/code_1.137.0-1788902055_amd64.deb",
+    "filename": "code_amd64.deb",
+    "hash": "sha256-/U3/csRFmNOsuIW0SCVvXYLPU/WVONl/x9PI2NnVdNM="
+  },
+  "control": {
+    "package": "code",
+    "homepage": "https://code.visualstudio.com/",
+    "maintainer": "Microsoft Corporation <vscode-linux@microsoft.com>",
+    "depends": "ca-certificates, libasound2 (>= 1.0.17), libatk-bridge2.0-0 (>= 2.5.3), libatk1.0-0 (>= 2.11.90), libatspi2.0-0 (>= 2.9.90), libc6 (>= 2.15), libc6 (>= 2.16), libc6 (>= 2.17), libc6 (>= 2.2.5), libc6 (>= 2.25), libc6 (>= 2.28), libc6 (>= 2.4), libcairo2 (>= 1.6.0), libcups2 (>= 1.6.0), libcurl3-gnutls | libcurl3-nss | libcurl4 | libcurl3, libdbus-1-3 (>= 1.9.14), libexpat1 (>= 2.1~beta3), libgbm1 (>= 17.1.0~rc2), libglib2.0-0 (>= 2.12.0), libglib2.0-0 (>= 2.39.4), libgtk-3-0 (>= 3.9.10), libgtk-3-0 (>= 3.9.10) | libgtk-4-1, libnspr4 (>= 2:4.9-2~), libnss3 (>= 2:3.30), libnss3 (>= 3.26), libpango-1.0-0 (>= 1.14.0), libudev1 (>= 183), libx11-6, libx11-6 (>= 2:1.4.99.1), libxcb1 (>= 1.9.2), libxcomposite1 (>= 1:0.4.4-1), libxdamage1 (>= 1:1.1), libxext6, libxfixes3, libxkbcommon0 (>= 0.5.0), libxkbfile1 (>= 1:1.1.0), libxrandr2, xdg-utils (>= 1.0.2)",
+    "section": "devel",
+    "license": "",
+    "description": "Code editing. Redefined."
+  },
+  "mapping": {
+    "locateAvailable": false,
+    "buildInputs": [
+      "xorg.libX11",
+      "xorg.libXcomposite",
+      "xorg.libXdamage",
+      "xorg.libXext",
+      "xorg.libXfixes",
+      "xorg.libXrandr",
+      "alsa-lib",
+      "at-spi2-atk",
+      "at-spi2-core",
+      "cairo",
+      "openssl",
+      "cups",
+      "curl",
+      "dbus",
+      "expat",
+      "mesa",
+      "gtk3",
+      "glib",
+      "nspr",
+      "nss",
+      "pango",
+      "libsecret",
+      "libsoup_3",
+      "systemd",
+      "util-linux",
+      "webkitgtk_4_1",
+      "xorg.libxcb",
+      "libxkbcommon",
+      "xorg.libxkbfile"
+    ],
+    "unmapped": [],
+    "bundled": [
+      "libffmpeg.so",
+      "libmsalruntime.so"
+    ],
+    "libs": [
+      {
+        "lib": "ld-linux-x86-64.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libX11.so.6",
+        "pkg": "xorg.libX11",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXcomposite.so.1",
+        "pkg": "xorg.libXcomposite",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXdamage.so.1",
+        "pkg": "xorg.libXdamage",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXext.so.6",
+        "pkg": "xorg.libXext",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXfixes.so.3",
+        "pkg": "xorg.libXfixes",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libXrandr.so.2",
+        "pkg": "xorg.libXrandr",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libasound.so.2",
+        "pkg": "alsa-lib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatk-1.0.so.0",
+        "pkg": "at-spi2-atk",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatk-bridge-2.0.so.0",
+        "pkg": "at-spi2-atk",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libatspi.so.0",
+        "pkg": "at-spi2-core",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libc.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libcairo.so.2",
+        "pkg": "cairo",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libcrypto.so.3",
+        "pkg": "openssl",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libcups.so.2",
+        "pkg": "cups",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libcurl.so.4",
+        "pkg": "curl",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libdbus-1.so.3",
+        "pkg": "dbus",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libdl.so.2",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libexpat.so.1",
+        "pkg": "expat",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libffmpeg.so",
+        "pkg": null,
+        "source": "bundled",
+        "note": "shipped inside the .deb"
+      },
+      {
+        "lib": "libgbm.so.1",
+        "pkg": "mesa",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgcc_s.so.1",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libgdk-3.so.0",
+        "pkg": "gtk3",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgio-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libglib-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgobject-2.0.so.0",
+        "pkg": "glib",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libgtk-3.so.0",
+        "pkg": "gtk3",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libm.so.6",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libmsalruntime.so",
+        "pkg": null,
+        "source": "bundled",
+        "note": "shipped inside the .deb"
+      },
+      {
+        "lib": "libnspr4.so",
+        "pkg": "nspr",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libnss3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libnssutil3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libpango-1.0.so.0",
+        "pkg": "pango",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libpthread.so.0",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "librt.so.1",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libsecret-1.so.0",
+        "pkg": "libsecret",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libsmime3.so",
+        "pkg": "nss",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libsoup-3.0.so.0",
+        "pkg": "libsoup_3",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libstdc++.so.6",
+        "pkg": "stdenv.cc.cc.lib",
+        "source": "toolchain",
+        "note": ""
+      },
+      {
+        "lib": "libudev.so.1",
+        "pkg": "systemd",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libutil.so.1",
+        "pkg": null,
+        "source": "system",
+        "note": "provided by glibc/interpreter"
+      },
+      {
+        "lib": "libuuid.so.1",
+        "pkg": "util-linux",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libwebkit2gtk-4.1.so.0",
+        "pkg": "webkitgtk_4_1",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libxcb.so.1",
+        "pkg": "xorg.libxcb",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libxkbcommon.so.0",
+        "pkg": "libxkbcommon",
+        "source": "builtin",
+        "note": ""
+      },
+      {
+        "lib": "libxkbfile.so.1",
+        "pkg": "xorg.libxkbfile",
+        "source": "builtin",
+        "note": ""
+      }
+    ]
+  },
+  "needed": [
+    "ld-linux-x86-64.so.2",
+    "libX11.so.6",
+    "libXcomposite.so.1",
+    "libXdamage.so.1",
+    "libXext.so.6",
+    "libXfixes.so.3",
+    "libXrandr.so.2",
+    "libasound.so.2",
+    "libatk-1.0.so.0",
+    "libatk-bridge-2.0.so.0",
+    "libatspi.so.0",
+    "libc.so.6",
+    "libcairo.so.2",
+    "libcrypto.so.3",
+    "libcups.so.2",
+    "libcurl.so.4",
+    "libdbus-1.so.3",
+    "libdl.so.2",
+    "libexpat.so.1",
+    "libffmpeg.so",
+    "libgbm.so.1",
+    "libgcc_s.so.1",
+    "libgdk-3.so.0",
+    "libgio-2.0.so.0",
+    "libglib-2.0.so.0",
+    "libgobject-2.0.so.0",
+    "libgtk-3.so.0",
+    "libm.so.6",
+    "libmsalruntime.so",
+    "libnspr4.so",
+    "libnss3.so",
+    "libnssutil3.so",
+    "libpango-1.0.so.0",
+    "libpthread.so.0",
+    "librt.so.1",
+    "libsecret-1.so.0",
+    "libsmime3.so",
+    "libsoup-3.0.so.0",
+    "libstdc++.so.6",
+    "libudev.so.1",
+    "libutil.so.1",
+    "libuuid.so.1",
+    "libwebkit2gtk-4.1.so.0",
+    "libxcb.so.1",
+    "libxkbcommon.so.0",
+    "libxkbfile.so.1"
+  ],
+  "binaries": [
+    "usr/share/applications/code.desktop",
+    "usr/share/code/bin/code",
+    "usr/share/code/bin/code-tunnel",
+    "usr/share/code/chrome-sandbox",
+    "usr/share/code/chrome_crashpad_handler",
+    "usr/share/code/code",
+    "usr/share/code/libvulkan.so.1",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-c-sharp.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-cpp.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-go.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-java.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-javascript.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-php.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-python.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-ruby.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-rust.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-tsx.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter-typescript.wasm",
+    "usr/share/code/resources/app/extensions/copilot/dist/tree-sitter.wasm",
+    "usr/share/code/resources/app/extensions/copilot/node_modules/@github/copilot/sdk/prebuilds/linux-x64/cli-native.node",
+    "usr/share/code/resources/app/extensions/copilot/node_modules/@github/copilot/sdk/prebuilds/linux-x64/runtime.node",
+    "usr/share/code/resources/app/extensions/copilot/node_modules/@github/copilot/sdk/ripgrep/bin/linux-x64/rg",
+    "usr/share/code/resources/app/extensions/copilot/node_modules/@github/copilot/sdk/tgrep/bin/linux-x64/tgrep",
+    "usr/share/code/resources/app/extensions/copilot/node_modules/@github/copilot/tgrep/bin/linux-x64/tgrep",
+    "usr/share/code/resources/app/extensions/git/dist/askpass-empty.sh",
+    "usr/share/code/resources/app/extensions/git/dist/askpass.sh",
+    "usr/share/code/resources/app/extensions/git/dist/git-editor-empty.sh",
+    "usr/share/code/resources/app/extensions/git/dist/git-editor.sh",
+    "usr/share/code/resources/app/extensions/git/dist/ssh-askpass-empty.sh",
+    "usr/share/code/resources/app/extensions/git/dist/ssh-askpass.sh",
+    "usr/share/code/resources/app/extensions/ms-vscode.js-debug/src/targets/node/terminateProcess.sh",
+    "usr/share/code/resources/app/node_modules/@vscode/sandbox-runtime/dist/cli.js",
+    "usr/share/code/resources/app/node_modules/@vscode/sandbox-runtime/vendor/seccomp/x64/apply-seccomp",
+    "usr/share/code/resources/app/node_modules/vsda/build/Release/vsda.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@devcontainers/cli/devcontainer.js",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@github/copilot-linux-x64/app.js",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@github/copilot-linux-x64/index.js",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@github/copilot-linux-x64/npm-loader.js",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@github/copilot-linux-x64/prebuilds/linux-x64/runtime.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@github/copilot-linux-x64/ripgrep/bin/linux-x64/rg",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@github/copilot-linux-x64/tgrep/bin/linux-x64/tgrep",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@github/copilot-linux-x64/tree-sitter.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@microsoft/mxc-sdk/bin/x64/lxc-exec",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@microsoft/mxc-sdk/bin/x64/unix-test-proxy",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@parcel/watcher/build/Release/watcher.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/deviceid/build/Release/windows.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/native-watchdog/build/Release/watchdog.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/os-proxy-resolver-linux-x64-gnu/os_proxy_resolver.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/policy-watcher/build/Release/vscode-policy-watcher.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/ripgrep-universal/bin/linux-x64/rg",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/spdlog/build/Release/spdlog.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/sqlite3/build/Release/vscode-sqlite3.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/tree-sitter-wasm/wasm/tree-sitter-bash.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/tree-sitter-wasm/wasm/tree-sitter-css.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/tree-sitter-wasm/wasm/tree-sitter-ini.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/tree-sitter-wasm/wasm/tree-sitter-powershell.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/tree-sitter-wasm/wasm/tree-sitter-regex.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/tree-sitter-wasm/wasm/tree-sitter-typescript.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/tree-sitter-wasm/wasm/tree-sitter.wasm",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/@vscode/vsce-sign/bin/vsce-sign",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/kerberos/build/Release/kerberos.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/kerberos/build/Release/obj.target/kerberos.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/native-is-elevated/build/Release/iselevated.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/native-keymap/build/Release/keymapping.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/node-pty/build/Release/pty.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/vsda/build/Release/vsda.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/windows-foreground-love/build/Release/foreground_love.node",
+    "usr/share/code/resources/app/node_modules.asar.unpacked/windows-foreground-love/build/Release/obj.target/foreground_love.node",
+    "usr/share/code/resources/app/out/vs/base/node/cpuUsage.sh",
+    "usr/share/code/resources/app/out/vs/base/node/ps.sh",
+    "usr/share/code/resources/app/out/vs/base/node/terminateProcess.sh",
+    "usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh"
+  ],
+  "mainProgram": "code",
+  "constraints": {
+    "noPublicNixpkgsPublish": true,
+    "unfreeExplicit": true,
+    "hashPinned": true,
+    "honestFailureOverSilentFhs": true,
+    "noDisplayLinkKernelLoad": true
+  }
+}

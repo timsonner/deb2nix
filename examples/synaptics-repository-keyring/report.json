@@ -1,0 +1,55 @@
+{
+  "deb2nix": "0.1.0",
+  "pname": "synaptics-repository-keyring",
+  "version": "2022.01",
+  "architecture": "all",
+  "nixSystem": "x86_64-linux",
+  "profile": {
+    "profile": "fhs-fallback",
+    "confidence": "low",
+    "reasons": [
+      "layout does not match cli/electron/chromium-browser/gtk/qt/driver heuristics"
+    ],
+    "evidence": {
+      "unmapped": []
+    },
+    "subtype": null,
+    "warnings": [
+      "Honest failure: deb2nix will not silently wrap this in buildFHSEnv. Inspect report.json."
+    ]
+  },
+  "unfree": true,
+  "licenseExpr": "lib.licenses.unfree",
+  "source": {
+    "kind": "url",
+    "url": "https://www.synaptics.com/sites/default/files/Ubuntu/pool/stable/main/all/synaptics-repository-keyring.deb",
+    "filename": "synaptics-repository-keyring.deb",
+    "hash": "sha256-+DMAkohI8vdgX/hDhGcmcBnHzFGB7Iueq8fx4Fy/rL4="
+  },
+  "control": {
+    "package": "synaptics-repository-keyring",
+    "homepage": "",
+    "maintainer": "Synaptics Technical Support <technical-enquiries@synaptics.com>",
+    "depends": "gpgv",
+    "section": "misc",
+    "license": "",
+    "description": "GnuPG archive keys of the Synaptics apt repository"
+  },
+  "mapping": {
+    "locateAvailable": false,
+    "buildInputs": [],
+    "unmapped": [],
+    "bundled": [],
+    "libs": []
+  },
+  "needed": [],
+  "binaries": [],
+  "mainProgram": "synaptics-repository-keyring",
+  "constraints": {
+    "noPublicNixpkgsPublish": true,
+    "unfreeExplicit": true,
+    "hashPinned": true,
+    "honestFailureOverSilentFhs": true,
+    "noDisplayLinkKernelLoad": true
+  }
+}

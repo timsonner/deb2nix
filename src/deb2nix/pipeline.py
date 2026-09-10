@@ -40,6 +40,7 @@ def run(
     skip_locate: bool = False,
     keep_unpack: bool = False,
     work_dir: Path | None = None,
+    src_url: str | None = None,
 ) -> RunResult:
     out_dir = out_dir.resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -69,24 +70,24 @@ def run(
         )
         pname = nix_ident(control.package)
         license_expr, unfree = license_expr_for(control)
-        # Debian packages without a License field are often DFSG-free (cli fixture)
-        # but unknown. For Section: utils/misc without non-free, treat as unknown-unfree
-        # only when classifier is electron/chromium or section is non-free.
-        if not control.license and not control.is_unfree():
-            if classification.profile in {"electron", "chromium-browser"} or _looks_proprietary(control):
-                unfree = True
-                license_expr = "lib.licenses.unfree"
-            elif _looks_mit(control):
-                unfree = False
-                license_expr = "lib.licenses.mit"
+        if _looks_proprietary(control) or control.is_unfree() or classification.profile in {
+            "driver",
+            "system",
+        }:
+            unfree = True
+            license_expr = "lib.licenses.unfree"
+        elif classification.profile in {"electron", "chromium-browser"} and not control.license:
+            unfree = True
+            license_expr = "lib.licenses.unfree"
         system = debian_arch_to_nix_system(control.architecture)
         main = guess_main_program(control, inv.binaries)
+        fetchurl_url = src_url or url
         ctx = EmitContext(
             control=control,
             classification=classification,
             mapping=mapping,
-            src_kind="url" if url else "local",
-            src_url=url,
+            src_kind="url" if fetchurl_url else "local",
+            src_url=fetchurl_url,
             src_hash=src_hash,
             src_filename=deb_path.name,
             system=system,
@@ -98,10 +99,11 @@ def run(
             needed=needed,
         )
         written = emit_all(out_dir, ctx)
-        dest_deb = out_dir / "src.deb"
-        if dest_deb.resolve() != deb_path.resolve():
-            shutil.copy2(deb_path, dest_deb)
-        written.append(dest_deb)
+        if not fetchurl_url:
+            dest_deb = out_dir / "src.deb"
+            if dest_deb.resolve() != deb_path.resolve():
+                shutil.copy2(deb_path, dest_deb)
+            written.append(dest_deb)
         if keep_unpack:
             kept = out_dir / "unpacked"
             if kept.exists():
@@ -126,16 +128,43 @@ def run(
 
 
 def _looks_proprietary(control: Control) -> bool:
+    """Product names only — do not match generic 'chrome'/'electron' in synthetic fixtures."""
+    pkg = control.package.lower()
+    if pkg in {
+        "google-chrome-stable",
+        "google-chrome-beta",
+        "google-chrome-unstable",
+        "microsoft-edge-stable",
+        "microsoft-edge-beta",
+        "microsoft-edge-dev",
+        "code",
+        "code-insiders",
+        "grok-bot",
+        "displaylink-driver",
+        "synaptics-repository-keyring",
+    }:
+        return True
+    if pkg.startswith("google-chrome") or pkg.startswith("microsoft-edge"):
+        return True
     blob = " ".join(
         [
             control.package,
+            control.homepage,
             control.maintainer,
-            control.description,
-            control.section,
+            control.source,
         ]
     ).lower()
-    tokens = ("google", "microsoft", "chrome", "edge", "vscode", "cursor", "spacexai", "unfree")
-    return any(t in blob for t in tokens)
+    needles = (
+        "google-chrome",
+        "microsoft-edge",
+        "displaylink",
+        "synaptics.com",
+        "grok-bot",
+        "cursor.com",
+        "code.visualstudio.com",
+        "visualstudio.com",
+    )
+    return any(n in blob for n in needles)
 
 
 def _looks_mit(control: Control) -> bool:

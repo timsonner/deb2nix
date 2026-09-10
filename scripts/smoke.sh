@@ -29,6 +29,7 @@ nix run "$ROOT"#deb2nix -- "$ROOT/fixtures/fake-electron-app_0.0.1_amd64.deb" --
 nix run "$ROOT"#deb2nix -- "$ROOT/fixtures/fake-chromium-browser_0.0.1_amd64.deb" --out "$COUT" --skip-locate
 python3 - <<PY
 import json
+import re
 from pathlib import Path
 hello = json.loads(Path("$OUT/report.json").read_text())
 elec = json.loads(Path("$EOUT/report.json").read_text())
@@ -39,9 +40,14 @@ assert chrome["profile"]["profile"] == "chromium-browser", chrome["profile"]
 print("classifier: hello ->", hello["profile"]["profile"])
 print("classifier: fake-electron ->", elec["profile"]["profile"])
 print("classifier: fake-chromium-browser ->", chrome["profile"]["profile"])
-assert "throw" in Path("$EOUT/package.nix").read_text()
-assert "throw" in Path("$COUT/package.nix").read_text()
-print("electron and chromium-browser stubs throw, as expected")
+e_pkg = Path("$EOUT/package.nix").read_text()
+c_pkg = Path("$COUT/package.nix").read_text()
+assert "autoPatchelfHook" in e_pkg
+assert "autoPatchelfHook" in c_pkg
+for pkg in (e_pkg, c_pkg):
+    assert not re.search(r'--add-flags\s+"--no-sandbox"', pkg)
+    assert not re.search(r"wrapProgram[^\n]*--no-sandbox", pkg)
+print("electron and chromium-browser userland exprs (no sandbox-disable flags)")
 PY
 
 echo "smoke ok"
