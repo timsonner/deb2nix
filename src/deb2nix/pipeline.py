@@ -69,16 +69,7 @@ def run(
             override=override,
         )
         pname = nix_ident(control.package)
-        license_expr, unfree = license_expr_for(control)
-        if _looks_proprietary(control) or control.is_unfree() or classification.profile in {
-            "driver",
-            "system",
-        }:
-            unfree = True
-            license_expr = "lib.licenses.unfree"
-        elif classification.profile in {"electron", "chromium-browser"} and not control.license:
-            unfree = True
-            license_expr = "lib.licenses.unfree"
+        license_expr = license_expr_for(control)
         system = debian_arch_to_nix_system(control.architecture)
         main = guess_main_program(control, inv.binaries)
         fetchurl_url = src_url or url
@@ -92,7 +83,6 @@ def run(
             src_filename=deb_path.name,
             system=system,
             pname=pname,
-            unfree=unfree,
             license_expr=license_expr,
             main_program=main,
             binaries=inv.binaries,
@@ -123,50 +113,5 @@ def run(
             report_path=out_dir / "report.json",
         )
     finally:
-        if tmp_owned and not keep_unpack:
+        if tmp_owned:
             shutil.rmtree(work, ignore_errors=True)
-
-
-def _looks_proprietary(control: Control) -> bool:
-    """Product names only — do not match generic 'chrome'/'electron' in synthetic fixtures."""
-    pkg = control.package.lower()
-    if pkg in {
-        "google-chrome-stable",
-        "google-chrome-beta",
-        "google-chrome-unstable",
-        "microsoft-edge-stable",
-        "microsoft-edge-beta",
-        "microsoft-edge-dev",
-        "code",
-        "code-insiders",
-        "grok-bot",
-        "displaylink-driver",
-        "synaptics-repository-keyring",
-    }:
-        return True
-    if pkg.startswith("google-chrome") or pkg.startswith("microsoft-edge"):
-        return True
-    blob = " ".join(
-        [
-            control.package,
-            control.homepage,
-            control.maintainer,
-            control.source,
-        ]
-    ).lower()
-    needles = (
-        "google-chrome",
-        "microsoft-edge",
-        "displaylink",
-        "synaptics.com",
-        "grok-bot",
-        "cursor.com",
-        "code.visualstudio.com",
-        "visualstudio.com",
-    )
-    return any(n in blob for n in needles)
-
-
-def _looks_mit(control: Control) -> bool:
-    blob = (control.description + " " + control.license).lower()
-    return "mit" in blob or "expat" in blob

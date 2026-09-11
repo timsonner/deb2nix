@@ -43,6 +43,14 @@ class ControlTests(unittest.TestCase):
     def test_arch(self) -> None:
         self.assertEqual(debian_arch_to_nix_system("amd64"), "x86_64-linux")
         self.assertEqual(debian_arch_to_nix_system("arm64"), "aarch64-linux")
+        self.assertEqual(debian_arch_to_nix_system("all"), "x86_64-linux")
+
+    def test_copyright_word_alone_is_not_unfree(self) -> None:
+        c = parse_control_text(
+            "Package: demo\nVersion: 1\nArchitecture: amd64\n"
+            "License: MIT\nDescription: has a copyright file\n"
+        )
+        self.assertFalse(c.is_unfree())
 
     def test_missing_package(self) -> None:
         with self.assertRaises(ValueError):

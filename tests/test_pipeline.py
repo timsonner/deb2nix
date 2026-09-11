@@ -62,6 +62,28 @@ class FixturePipelineTests(unittest.TestCase):
             self.assertIn("DKMS", text)
             self.assertTrue((Path(td) / "LIMITATIONS.md").is_file())
 
+    def test_chrome_gnome_shell_token_is_cli(self) -> None:
+        path = ROOT / "fixtures" / "fake-chrome-gnome-shell_0.0.1_amd64.deb"
+        if not path.is_file():
+            self.skipTest("chrome-gnome-shell fixture missing; run scripts/make-fixtures.sh")
+        with TemporaryDirectory() as td:
+            result = run(str(path), Path(td), skip_locate=True)
+            self.assertEqual(result.classification.profile, "cli")
+            package = (Path(td) / "package.nix").read_text()
+            self.assertIn("autoPatchelfHook", package)
+            self.assertNotIn("throw", package.split("meta")[0])
+
+    def test_opt_cli_rewrites_wrapper(self) -> None:
+        path = ROOT / "fixtures" / "fake-opt-cli_0.0.1_amd64.deb"
+        if not path.is_file():
+            self.skipTest("opt-cli fixture missing; run scripts/make-fixtures.sh")
+        with TemporaryDirectory() as td:
+            result = run(str(path), Path(td), skip_locate=True)
+            self.assertEqual(result.classification.profile, "cli")
+            package = (Path(td) / "package.nix").read_text()
+            self.assertIn("ln -sfn", package)
+            self.assertIn("x7fELF", package)
+
     def test_src_url_stamps_fetchurl_without_copying_deb(self) -> None:
         with TemporaryDirectory() as td:
             run(

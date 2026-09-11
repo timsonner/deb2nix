@@ -22,6 +22,17 @@ class LocateTests(unittest.TestCase):
         self.assertIn("zlib", result.build_inputs)
         self.assertNotIn("stdenv.cc.cc.lib", result.build_inputs)
 
+    def test_gmp_nl_webkit(self) -> None:
+        result = map_libraries(
+            ["libgmp.so.10", "libnl-3.so.200", "libwebkit2gtk-4.0.so.37"],
+            bundled_names=set(),
+            skip_locate=True,
+        )
+        by_lib = {m.lib: m for m in result.mapped}
+        self.assertEqual(by_lib["libgmp.so.10"].pkg, "gmp")
+        self.assertEqual(by_lib["libnl-3.so.200"].pkg, "libnl")
+        self.assertEqual(by_lib["libwebkit2gtk-4.0.so.37"].pkg, "webkitgtk_4_0")
+
     def test_bundled_skipped(self) -> None:
         result = map_libraries(
             ["libfoo.so.1"],

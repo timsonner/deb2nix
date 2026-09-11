@@ -12,6 +12,8 @@ Still **do not** load DKMS/kernel modules, modify Tim’s machines, or publish t
 | Electron markers | `fixtures/fake-electron-app_0.0.1_amd64.deb` | MIT (synthetic) | `electron` | Empty `app.asar` (+ sandbox/paks). **Not** Electron software. Userland emit (autoPatchelf). |
 | Chromium-browser markers | `fixtures/fake-chromium-browser_0.0.1_amd64.deb` | MIT (synthetic) | `chromium-browser` | `chrome-sandbox` + paks, **no** `app.asar`. Distinguishes Chrome/Edge from VS Code/Grok Bot. |
 | DisplayLink markers | `fixtures/fake-displaylink_0.0.1_amd64.deb` | MIT (synthetic) | `driver` | Dummy `dkms.conf` + `evdi.ko` **filename**. Not a real module. **Do not insmod.** Emit is `throw`. |
+| `/opt` CLI | `fixtures/fake-opt-cli_0.0.1_amd64.deb` | MIT (synthetic) | `cli` | `usr/bin` wrapper hardcodes `/opt/...`. Tests symlink/script retarget, not ELF rewrite. |
+| Chrome name token | `fixtures/fake-chrome-gnome-shell_0.0.1_amd64.deb` | MIT (synthetic) | `cli` | Package name contains `chrome`; must **not** become `chromium-browser`. |
 
 SRI hashes from this tree (rebuild with `scripts/make-fixtures.sh`; hello may drift if `gcc` changes):
 

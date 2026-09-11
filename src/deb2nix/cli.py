@@ -107,6 +107,8 @@ def _print_summary(result) -> None:
         print(f"            {path}")
     if c.profile in {"electron", "chromium-browser"}:
         print("  note    : userland expr emitted (autoPatchelf). No --no-sandbox. GUI smoke is Hyprland.")
+    elif c.profile in {"gtk", "qt"}:
+        print("  note    : userland expr emitted (autoPatchelf). GUI smoke is Hyprland.")
     elif c.profile in {"driver", "system"}:
         print("  note    : driver/system stub (no DKMS/insmod). See LIMITATIONS.md.")
     elif c.profile != "cli":

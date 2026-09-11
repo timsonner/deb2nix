@@ -47,11 +47,12 @@ class Control:
             "unfree",
             "commercial",
             "all rights reserved",
-            "copyright",
         )
         if license_l and any(tok in license_l for tok in proprietary_tokens):
             return True
-        if not self.license and section in {"non-free", "non-free-firmware", "contrib"}:
+        if not self.license and (
+            section.startswith("non-free") or section in {"non-free-firmware"}
+        ):
             return True
         return False
 

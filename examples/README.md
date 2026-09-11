@@ -11,7 +11,7 @@ These trees were produced by `scripts/generate-vendor-examples.sh` from `fixture
 | `displaylink-driver` | `driver` | **throws** (see `LIMITATIONS.md`) |
 | `synaptics-repository-keyring` | `fhs-fallback` (no ELF/binaries) | **throws** — APT keyring only, not the driver |
 
-Unfree is gated with `allowUnfreePredicate` for that pname only.
+Generated flakes do not set `allowUnfree`.
 
 ```bash
 nix build ./examples/google-chrome-stable

@@ -8,22 +8,20 @@ nix run .#deb2nix -- https://example.com/app.deb --out ./generated
 nix run .#deb2nix -- ./vendor.deb --src-url https://example.com/vendor.deb --out ./out
 ```
 
-**cli** is a working `autoPatchelfHook` derivation. **electron** and **chromium-browser** emit userland unpack + autoPatchelf + GApps wrap (no `--no-sandbox`, no setuid sandbox). **driver** / **system** (DisplayLink) emit an honest `throw` plus a NixOS module stub. Never a silent `buildFHSEnv`. Never a kernel load.
+**cli**, **gtk**, and **qt** emit working `autoPatchelfHook` derivations. **electron** and **chromium-browser** add GApps wrap (no `--no-sandbox`, no setuid sandbox). **driver** / **system** (DisplayLink) emit an honest `throw` plus a NixOS module stub. Never a silent `buildFHSEnv`. Never a kernel load.
 
-GREENFIELD hybrid: reimplement unpack + ELF mapping ideas; do not fork app2nix (license metadata empty). See [`STATUS.md`](STATUS.md) and [`docs/PRIOR-ART.md`](docs/PRIOR-ART.md).
-
-Tim approval **2026-09-10** accepted unfree EULAs (Chrome, Edge, VS Code, Grok Bot, DisplayLink). Generated flakes still use `allowUnfreePredicate` for **that pname only**. DisplayLink remains a stub: [`docs/DISPLAYLINK.md`](docs/DISPLAYLINK.md).
+GREENFIELD hybrid: reimplement unpack + ELF mapping ideas; do not fork app2nix (license metadata empty). See [`STATUS.md`](STATUS.md) and [`docs/PRIOR-ART.md`](docs/PRIOR-ART.md). Kernel-module `.deb`s still throw: [`docs/DISPLAYLINK.md`](docs/DISPLAYLINK.md).
 
 ## Profiles
 
-| Profile | When | Emit |
+| Profile | When (contents of the `.deb`, never the product name) | Emit |
 | --- | --- | --- |
-| `cli` | ELF binaries, no GUI/driver markers | Working derivation: unpack with `dpkg-deb`, `autoPatchelfHook`, hash-pinned `src` |
-| `electron` | `app.asar` / Grok Bot / VS Code | Userland autoPatchelf + `wrapGAppsHook3`. GUI smoke is NixOS+Hyprland. |
-| `chromium-browser` | Chrome / Edge: `chrome-sandbox` without `app.asar` | Same userland shape, distinct profile (not Electron ABI). |
-| `gtk` / `qt` | `DT_NEEDED` on GTK/Qt | stub `throw` |
-| `driver` / `system` | `.ko`, `dkms.conf`, DisplayLink/EVDI | stub `throw` + `LIMITATIONS.md` + `nixos-module.stub.nix`. Will not insmod. |
-| `fhs-fallback` | no other match, or too much unknown | stub `throw` (refuses silent FHS) |
+| `cli` | ELF/binaries, no GUI/driver markers | Working derivation: unpack, `autoPatchelfHook`, `/opt` retarget, hash-pinned `src` |
+| `electron` | `app.asar` / `app.asar.unpacked` / `Depends: electron*` | Userland autoPatchelf + `wrapGAppsHook3` |
+| `chromium-browser` | `chrome-sandbox` without `app.asar` | Same userland shape, distinct profile |
+| `gtk` / `qt` | `DT_NEEDED` on GTK/Qt | Userland autoPatchelf + GApps or Qt wrap |
+| `driver` / `system` | `.ko`, `dkms.conf`, or `lib/modules` in the payload | stub `throw` + `LIMITATIONS.md`. Will not insmod. |
+| `fhs-fallback` | no binaries and no other match | stub `throw` (refuses silent FHS) |
 
 `--profile` overrides the classifier; `auto` **never** defaults to Electron.
 
@@ -59,7 +57,7 @@ nix build ./hello-deb2nix-nix
 ./result/bin/hello-deb2nix
 ```
 
-`driver` / `gtk` / `qt` / `fhs-fallback` results evaluate to `throw` until that profile is implemented. DisplayLink’s throw is deliberate.
+`driver` / `system` / `fhs-fallback` results evaluate to `throw`. DisplayLink’s throw is deliberate. `gtk` / `qt` emit userland derivations (GUI smoke is still NixOS+Hyprland).
 
 ## What it actually does
 
@@ -68,14 +66,13 @@ nix build ./hello-deb2nix-nix
 3. Unpack with `dpkg-deb` (fallback: `ar` + `tar`).
 4. Parse `control`, inventory files, scan ELF `DT_NEEDED` (`readelf` / `patchelf` / struct fallback).
 5. Map libraries via a builtin table, then `nix-locate` when it is on `PATH`.
-6. Classify a profile (see table). `app.asar` selects `electron`; Chromium sandbox/paks without asar select `chromium-browser`. GTK libs that Chromium also needs do not steal those profiles.
+6. Classify a profile from **files and ELF `DT_NEEDED` only** (see table). Package names and descriptions are ignored. `app.asar` selects `electron`; `chrome-sandbox` without asar selects `chromium-browser`.
 7. Emit `flake.nix`, `package.nix`, `default.nix`, `report.json`. Local inputs without `--src-url` are copied to `src.deb`.
 
-Unfree packages set `config.allowUnfreePredicate` for **that pname only**. Unknown licenses are treated as unfree rather than silently marked MIT. Nothing here is for publishing into nixpkgs.
+`meta.license` follows Debian + nixpkgs: a known `License:` maps to `lib.licenses.*`; Debian `non-free` → `lib.licenses.unfree`; missing `License:` on a free section → `lib.licenses.free`. The generator does **not** set `allowUnfree`. That is the parent NixOS / user nixpkgs config (`nixpkgs.config.allowUnfree`, or `NIXPKGS_ALLOW_UNFREE=1 nix build --impure` on a flake). `default.nix` uses `import <nixpkgs> {}`, so `~/.config/nixpkgs/config.nix` applies.
 
 ## Constraints (honored)
 
-- Unfree is explicit (pname-scoped predicate; EULAs accepted 2026-09-10).
 - Hashes are pinned.
 - Honest failure > silent FHS.
 - No DisplayLink / DKMS / `insmod` (see `docs/DISPLAYLINK.md`).
@@ -89,6 +86,8 @@ Vendor GUI/driver `.deb`s are prefetched into `fixtures/vendor/` (gitignored blo
 - `fixtures/fake-electron-app_0.0.1_amd64.deb` — `app.asar` markers (VS Code / Grok Bot family).
 - `fixtures/fake-chromium-browser_0.0.1_amd64.deb` — sandbox/paks, no asar (Chrome / Edge family).
 - `fixtures/fake-displaylink_0.0.1_amd64.deb` — dummy `dkms.conf` + `.ko` name; **not** a kernel module.
+- `fixtures/fake-opt-cli_0.0.1_amd64.deb` — `/usr/bin` wrapper execs `/opt/...`; tests retargeting.
+- `fixtures/fake-chrome-gnome-shell_0.0.1_amd64.deb` — name contains `chrome`; must stay `cli`.
 
 Hash-pinned generated examples: [`examples/`](examples/). Rebuild synthetics with `bash scripts/make-fixtures.sh`. Public URL table: [`fixtures/MATRIX.md`](fixtures/MATRIX.md). Status: [`STATUS.md`](STATUS.md).
 
@@ -119,4 +118,4 @@ GREENFIELD hybrid — see [`docs/PRIOR-ART.md`](docs/PRIOR-ART.md). Short versio
 
 ## License
 
-MIT. Generated expressions inherit the **upstream** `.deb` license; unfree stays unfree.
+MIT. Generated expressions copy the upstream `.deb` `License:` field when present.

@@ -8,9 +8,8 @@ Cloud VM, headless: **generate → `nix build` of userland expressions only**. N
 
 Allowed now:
 
-- `allowUnfreePredicate` (pname-scoped) in generated expressions. The generator flake itself stays MIT and does not set `allowUnfree = true`.
 - Prefetch + hash-pin of vendor `.deb`s (blobs gitignored under `fixtures/vendor/`; SRI in `fixtures/vendor/LOCK.json` and `fixtures/MATRIX.md`).
-- DisplayLink documented as `driver`/`system` with **module stub + limitations report**.
+- Kernel-module `.deb`s documented as `driver`/`system` with **module stub + limitations report**.
 
 Still forbidden:
 
@@ -52,14 +51,14 @@ Full pack on some boxes: `/workspace/ops-graph/jobs/deb2nix-generator/prior-art.
 - **cli profile emit is complete**: `stdenv.mkDerivation` + `autoPatchelfHook` + `dpkg-deb --fsys-tarfile` (no setuid unpack) + hash-pinned `src`.
 - **electron / chromium-browser userland emit**: same unpack + `autoPatchelfHook` + `wrapGAppsHook3`. Does **not** add `--no-sandbox`. `chrome-sandbox` is mode 0755, never setuid. GUI smoke is still a later NixOS+Hyprland step.
 - Classifier **does not default to Electron**. First-class profiles:
-  - `electron`: `app.asar` / `app.asar.unpacked`, names like `code` / `grok-bot`
-  - `chromium-browser`: Chrome/Edge/Brave — `chrome-sandbox` / paks **without** `app.asar`
-  - `gtk` / `qt`: `DT_NEEDED` (still `throw`)
+  - `electron`: `app.asar` / `app.asar.unpacked` / `Depends: electron*` (not package names)
+  - `chromium-browser`: `chrome-sandbox` without `app.asar` (not Chrome/Edge product names)
+  - `gtk` / `qt`: `DT_NEEDED` → userland autoPatchelf + toolkit wrap
   - `driver` / `system`: `.ko`, `dkms.conf`, DisplayLink/EVDI names → **throw** + `LIMITATIONS.md` + `nixos-module.stub.nix`
   - `cli`: leftover ELF/binaries
   - `fhs-fallback`: honest `throw`, not `buildFHSEnv`
 - Synthetic fixtures in `fixtures/` plus vendor pins in `fixtures/vendor/LOCK.json` (`.deb` blobs gitignored).
-- Unfree: `allowUnfreePredicate` for that pname only. Unknown license → unfree, not silent MIT. Tim 2026-09-10 approval is recorded in generated headers; it does not blanket-enable nixpkgs unfree.
+- License: Debian + nixpkgs convention. Known `License:` → `lib.licenses.*`; `non-free` → `unfree`; missing field on a free section → `lib.licenses.free`. No `allowUnfree` in generated flakes — the parent OS/user nixpkgs config decides.
 
 ## What is stubbed
 
@@ -67,7 +66,7 @@ Full pack on some boxes: `/workspace/ops-graph/jobs/deb2nix-generator/prior-art.
 | --- | --- | --- | --- |
 | `electron` | 2 userland | `stdenv.mkDerivation` + autoPatchelf + GApps | Examples: Grok Bot 0.47.0, VS Code 1.137.0. No `--no-sandbox`. GUI smoke later. |
 | `chromium-browser` | 2 userland | same shape, distinct profile | Examples: Chrome `current`, Edge 152. Distinct from Electron ABI. |
-| `gtk` / `qt` | later | `throw` | Toolkit wraps. |
+| `gtk` / `qt` | 2 userland | autoPatchelf + GApps or Qt wrap | No FHS. GUI smoke later. |
 | `driver` / `system` | **3 parked** | `throw` + module stub + `LIMITATIONS.md` | DisplayLink PPA 6.3.0 inspected. Userspace `DisplayLinkManager` exists; EVDI/DKMS is a **Depends**, not in this `.deb`. Never `insmod`. |
 | `fhs-fallback` | — | `throw` | Even `--profile fhs-fallback` still throws so FHS cannot happen by accident. |
 
@@ -139,7 +138,7 @@ A working driver needs NixOS `hardware.video.displaylink` + `evdi` on a machine 
 ## Known gaps
 
 - Builtin lib map is incomplete; unmapped libs become `autoPatchelfIgnoreMissingDeps` (listed in `report.json`). Visible, not silent. Userland `nix build` can succeed while the GUI still fails at runtime.
-- `License:` is often missing on Debian binaries; we then mark unfree unless the field maps cleanly (the CLI fixture sets `License: MIT`).
+- `License:` is often missing on Debian binaries; that becomes `lib.licenses.free` (unspecified free), not a silent MIT and not a forced unfree. Debian `non-free` still maps to `lib.licenses.unfree` so NixOS `allowUnfree` applies.
 - Generated flakes pin `nixpkgs` to `nixos-unstable` **unpinned URL** (consumer `flake.lock` on first `nix build`). The `.deb` itself is SRI-pinned.
 - Multi-arch `.deb`s other than amd64/arm64 are mapped coarsely.
 - No Windows/macOS.
