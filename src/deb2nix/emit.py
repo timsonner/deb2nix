@@ -370,9 +370,20 @@ def _install_phase() -> str:
         [ -d "$root" ] || continue
         find "$root" -maxdepth 4 -type f -executable \\
           ! -name '*.so' ! -name '*.so.*' ! -name '*-sandbox' ! -name '*crashpad*' \\
+          ! -name '*.desktop' \\
           2>/dev/null | while IFS= read -r exe; do
           [ -n "$exe" ] || continue
-          ln -sfn "$exe" "$out/bin/$(basename "$exe")" || true
+          dest="$out/bin/$(basename "$exe")"
+          # Prefer the Electron ELF over VS Code/Cursor bin/*.sh of the same name.
+          if [ -e "$dest" ] || [ -L "$dest" ]; then
+            old="$(readlink -f "$dest" 2>/dev/null || echo "$dest")"
+            old_magic="$(head -c 4 "$old" 2>/dev/null || true)"
+            new_magic="$(head -c 4 "$exe" 2>/dev/null || true)"
+            if [ "$old_magic" = $'\\x7fELF' ] && [ "$new_magic" != $'\\x7fELF' ]; then
+              continue
+            fi
+          fi
+          ln -sfn "$exe" "$dest" || true
         done
       done
     fi
@@ -451,6 +462,8 @@ def _emit_userland_package(ctx: EmitContext) -> str:
   preFixup = ''
     gappsWrapperArgs+=(
       --set-default ELECTRON_FORCE_IS_PACKAGED 1
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ libGL mesa libdrm ]}"
+      --add-flags --ozone-platform-hint=auto
     )
   '';
 """
@@ -460,9 +473,9 @@ def _emit_userland_package(ctx: EmitContext) -> str:
   postFixup = ''
     if [ -n "''${gappsWrapperArgs-}" ]; then
       for bin in "$out/bin"/*; do
-        if [ -e "$bin" ] && [ -x "$bin" ]; then
-          wrapProgram "$bin" "''${gappsWrapperArgs[@]}" || true
-        fi
+        [ -e "$bin" ] && [ -x "$bin" ] || continue
+        case "$bin" in *.desktop) continue ;; esac
+        wrapProgram "$bin" "''${gappsWrapperArgs[@]}" || true
       done
     fi
   '';
