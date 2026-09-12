@@ -27,8 +27,20 @@ class Inventory:
         return any(p.endswith(suffix) for p in self.files)
 
     def has_path_part(self, part: str) -> bool:
-        needle = part.lower()
-        return any(needle in p.lower() for p in self.files + self.dirs)
+        """True if `part` is consecutive path components, not a substring.
+
+        `lib/modules` matches `lib/modules/evdi.ko`, not `tslib/modules`.
+        """
+        segs = [s for s in part.lower().replace("\\", "/").strip("/").split("/") if s]
+        if not segs:
+            return False
+        for p in self.files + self.dirs:
+            parts = p.lower().replace("\\", "/").strip("/").split("/")
+            n = len(segs)
+            for i in range(0, len(parts) - n + 1):
+                if parts[i : i + n] == segs:
+                    return True
+        return False
 
 
 def rel(root: Path, path: Path) -> str:

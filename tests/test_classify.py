@@ -152,6 +152,39 @@ class ClassifyTests(unittest.TestCase):
         )
         self.assertEqual(c.profile, "cli")
 
+    def test_tslib_modules_is_not_kernel_lib_modules(self) -> None:
+        """Cursor ships node_modules/tslib/modules; that is not /lib/modules."""
+        inv = Inventory(
+            files=[
+                "usr/share/cursor/chrome-sandbox",
+                "usr/share/cursor/chrome_crashpad_handler",
+                "usr/share/cursor/resources/app/node_modules/tslib/modules/index.js",
+            ],
+            dirs=["usr/share/cursor/resources/app", "usr/share/cursor/resources/app/node_modules/tslib/modules"],
+            binaries=["usr/share/cursor/cursor"],
+        )
+        c = classify(_control(package="cursor", description="The AI Code Editor."), inv, [])
+        self.assertEqual(c.profile, "electron")
+        self.assertNotIn(c.profile, {"driver", "system"})
+
+    def test_unpacked_resources_app_is_electron_not_chromium_browser(self) -> None:
+        inv = Inventory(
+            files=["usr/share/cursor/chrome-sandbox", "usr/share/cursor/resources/app/package.json"],
+            dirs=["usr/share/cursor/resources/app"],
+            binaries=["usr/share/cursor/cursor"],
+        )
+        c = classify(_control(package="cursor"), inv, [])
+        self.assertEqual(c.profile, "electron")
+        self.assertNotEqual(c.profile, "chromium-browser")
+
+    def test_real_lib_modules_ko_is_still_driver(self) -> None:
+        inv = Inventory(
+            files=["lib/modules/6.12.0/evdi.ko"],
+            kernel_modules=["lib/modules/6.12.0/evdi.ko"],
+        )
+        c = classify(_control(package="kmod"), inv, [])
+        self.assertIn(c.profile, {"driver", "system"})
+
     def test_product_name_without_kernel_payload_is_not_driver(self) -> None:
         inv = Inventory(files=["opt/vendor/Manager"], binaries=[])
         c = classify(

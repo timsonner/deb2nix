@@ -117,12 +117,18 @@ def _classify(
     sandbox_files = [p for p in inventory.files if PathName(p) == "chrome-sandbox"]
     depends_electron = bool(re.search(r"(^|[,\s])electron([0-9]|-|$)", depends))
 
-    if asar_files or electron_dirs or depends_electron:
+    unpacked_electron = inventory.has_path_part("resources/app") and bool(
+        electron_payload or sandbox_files
+    )
+
+    if asar_files or electron_dirs or depends_electron or unpacked_electron:
         reasons: list[str] = []
         if asar_files:
             reasons.append("electron payload: app.asar")
         if electron_dirs:
             reasons.append("found app.asar.unpacked")
+        if unpacked_electron and not asar_files:
+            reasons.append("unpacked electron tree: resources/app")
         if electron_payload:
             reasons.append(
                 "electron/chromium helper files: "
@@ -132,7 +138,7 @@ def _classify(
             reasons.append("Depends mentions electron")
         return Classification(
             profile="electron",
-            confidence="high" if asar_files or electron_dirs else "medium",
+            confidence="high" if asar_files or electron_dirs or unpacked_electron else "medium",
             reasons=reasons or ["Depends mentions electron"],
             evidence={"files": (asar_files + electron_payload)[:20]},
             subtype="electron",

@@ -363,12 +363,17 @@ def _install_phase() -> str:
     find "$out" -type f \\( -name chrome-sandbox -o -name '*-sandbox' \\) -exec chmod 0755 {} \\; || true
     mkdir -p "$out/bin"
     # If the .deb had no usr/bin, expose executables from opt/share by basename.
+    # Find each tree only if it exists: missing $out/opt makes GNU find return 1
+    # (Cursor is /usr/share only; Grok Bot is /opt). pipefail would fail the build.
     if [ -z "$(find "$out/bin" -mindepth 1 -maxdepth 1 \\( -type f -o -xtype f \\) -print -quit 2>/dev/null)" ]; then
-      find "$out/opt" "$out/share" -maxdepth 4 -type f -executable \\
-        ! -name '*.so' ! -name '*.so.*' ! -name '*-sandbox' ! -name '*crashpad*' \\
-        2>/dev/null | while IFS= read -r exe; do
-        [ -n "$exe" ] || continue
-        ln -sfn "$exe" "$out/bin/$(basename "$exe")" || true
+      for root in "$out/opt" "$out/share"; do
+        [ -d "$root" ] || continue
+        find "$root" -maxdepth 4 -type f -executable \\
+          ! -name '*.so' ! -name '*.so.*' ! -name '*-sandbox' ! -name '*crashpad*' \\
+          2>/dev/null | while IFS= read -r exe; do
+          [ -n "$exe" ] || continue
+          ln -sfn "$exe" "$out/bin/$(basename "$exe")" || true
+        done
       done
     fi
     runHook postInstall
