@@ -135,12 +135,14 @@ Re-ran generate + userland `nix build` against a local `grok-bot_0.47.0_amd64.de
 | Sandbox | `chrome-sandbox` mode 555, not setuid. Wrapper has **no** `--no-sandbox`. |
 | Runtime (accidental) | `grok-bot --version` started Electron on Wayland (`NIXOS_OZONE_WL`); renderer had `--enable-sandbox`. Killed; not a GUI sign-off. |
 | DisplayLink zip in `~/Downloads` | Makeself `.run`, **not** a `.deb`. Did not install. Did not `insmod`. |
+| PATH | `nix build` left `grok-bot` off `PATH`. New terminals did nothing until `nix profile add` of the store path. Generate ≠ install. |
 
 Lessons folded into the generator:
 
 - `License: unknown` / `n/a` → `lib.licenses.free` (was a quoted Nix string `"unknown"`).
 - Builtin + GUI extras emit `libx11` / `libxcb` / … not `xorg.libX11` (26.05 deprecation warnings).
 - Local `.run` / `.zip` is an explicit error, not a cryptic suffix check.
+- CLI + NOTES.md + skill: `nix build` is not on PATH; **ask** user vs `nix profile add` vs NixOS `systemPackages`.
 
 ## Next steps
 

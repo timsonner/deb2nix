@@ -36,5 +36,10 @@ Do not add generator tools (`python3`, `dpkg`, `gcc`, `binutils`) to NixOS `envi
 - Userland profiles (`cli`, `electron`, `chromium-browser`, `gtk`, `qt`): `autoPatchelfHook`, unpack via `dpkg-deb --fsys-tarfile`.
 - X11 attrs are flat (`libx11`, not `xorg.libX11`).
 - Placeholder `License:` (`unknown`, `n/a`) → `lib.licenses.free`. Debian `non-free` → `lib.licenses.unfree`.
-- `nix build` is not GUI smoke. Electron `--version` may open a window; launch `$out/bin/<pname>` under Hyprland instead.
+- `nix build` is not GUI smoke and **not an install**. The binary is not on `PATH`. Electron `--version` may open a window.
+- After generate + build, **ask every time** how to install. Do not reuse the last choice as a default.
+  - run `./result/bin/<pname>` (or the store path) — no PATH change
+  - `nix profile add ./result` — user profile, `~/.nix-profile/bin`
+  - NixOS `environment.systemPackages` via `pkgs.callPackage ./package.nix {}` — needs rebuild
+- Do not `nix profile add` or edit nixos-config until the user picks.
 - Vendor blobs stay gitignored under `fixtures/vendor/`. Pins live in `fixtures/vendor/LOCK.json`. Regenerating examples needs those blobs: `bash scripts/generate-vendor-examples.sh`.

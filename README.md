@@ -57,7 +57,14 @@ nix build ./hello-deb2nix-nix
 ./result/bin/hello-deb2nix
 ```
 
-`driver` / `system` / `fhs-fallback` results evaluate to `throw`. DisplayLink’s throw is deliberate. `gtk` / `qt` emit userland derivations (GUI smoke is still NixOS+Hyprland).
+That is **not** `dpkg -i` and **not** on `PATH`. A new terminal will not find the command until you install it. Ask which:
+
+```bash
+nix profile add ./result                         # user profile (~/.nix-profile/bin)
+# or NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages
+```
+
+GUI binaries open a window (Electron `--version` / `--help` do too). `driver` / `system` / `fhs-fallback` results evaluate to `throw`. DisplayLink’s throw is deliberate.
 
 ## What it actually does
 

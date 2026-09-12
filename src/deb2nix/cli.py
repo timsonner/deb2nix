@@ -107,15 +107,30 @@ def _print_summary(result) -> None:
         print(f"            {path}")
     if c.profile in {"electron", "chromium-browser"}:
         print("  note    : userland expr emitted (autoPatchelf). No --no-sandbox. GUI smoke is Hyprland.")
+        _print_install_hint(result)
     elif c.profile in {"gtk", "qt"}:
         print("  note    : userland expr emitted (autoPatchelf). GUI smoke is Hyprland.")
+        _print_install_hint(result)
+    elif c.profile == "cli":
+        _print_install_hint(result)
     elif c.profile in {"driver", "system"}:
         print("  note    : driver/system stub (no DKMS/insmod). See LIMITATIONS.md.")
-    elif c.profile != "cli":
+    else:
         print("  note    : profile is stubbed (package.nix throws). See STATUS.md.")
     if c.warnings:
         for w in c.warnings:
             print(f"  warn    : {w}")
+
+
+def _print_install_hint(result) -> None:
+    """nix build is not dpkg -i. The binary is not on PATH until the user installs it."""
+    main = result.pname
+    out = result.out_dir
+    print("  install : not on PATH. `nix build` is not an install. Ask how to install:")
+    print(f"            nix build {out}")
+    print(f"            ./result/bin/{main}                 # run from the build, GUI apps open a window")
+    print("            nix profile add ./result            # user profile → ~/.nix-profile/bin")
+    print("            NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages")
 
 
 if __name__ == "__main__":
