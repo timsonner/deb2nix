@@ -8,44 +8,11 @@ description: >
 
 # deb2nix
 
-Read `README.md` and `STATUS.md` before changing emit, classify, or license mapping. Do not restate those docs here.
+The program is `nix run .#deb2nix`. Humans do not need this skill. Usage, emit, classify, license, and install/remove commands live in `README.md` and the CLI summary — do not restate them.
 
-## Run
+## Agent-only
 
-```bash
-nix run .#deb2nix -- ./app.deb
-nix run .#deb2nix -- ./app.deb --src-url https://example.com/app.deb --out ./out --skip-locate
-nix develop -c python3 -m unittest discover -s tests -v
-bash scripts/smoke.sh
-```
-
-Do not add generator tools (`python3`, `dpkg`, `gcc`, `binutils`) to NixOS `environment.systemPackages` unless the user asks. Use `nix run` / `nix develop`.
-
-## Hard rules
-
-- Input must be a Debian `.deb`. Reject Makeself `.run` and vendor `.zip` (DisplayLink Ubuntu EXE is a `.run` zip, not a deb). See `docs/DISPLAYLINK.md`.
-- Never `insmod`, DKMS, `modprobe`, or enable `hardware.video.displaylink` / `evdi`.
-- Never emit `--no-sandbox` or setuid `*-sandbox`. Mode 0755; Nix store will show 555.
-- Never silent `buildFHSEnv`. `fhs-fallback` and `driver` / `system` throw.
-- Classify from payload only (`app.asar`, `chrome-sandbox`, `DT_NEEDED`, `.ko` / `dkms.conf`). Not product names.
-- Generator does not set `allowUnfree`. Flake builds: `NIXPKGS_ALLOW_UNFREE=1 nix build --impure`.
+- Do not add generator tools to NixOS (`python3`, `dpkg`, `gcc`, `binutils`). Use `nix run` / `nix develop`.
+- Do not `insmod`, DKMS, or enable `hardware.video.displaylink` / `evdi` on the host. The generator already throws for driver `.deb`s; do not work around it in nixos-config.
 - Do not open a public nixpkgs PR from this tool.
-
-## Emit notes
-
-- Userland profiles (`cli`, `electron`, `chromium-browser`, `gtk`, `qt`): `autoPatchelfHook`, unpack via `dpkg-deb --fsys-tarfile`.
-- X11 attrs are flat (`libx11`, not `xorg.libX11`).
-- Placeholder `License:` (`unknown`, `n/a`) → `lib.licenses.free`. Debian `non-free` → `lib.licenses.unfree`.
-- `nix build` is not GUI smoke and **not an install**. The binary is not on `PATH`. Electron `--version` may open a window.
-- After generate + build, **ask every time** how to install. Do not reuse the last choice as a default.
-  - run `./result/bin/<pname>` (or the store path) — no PATH change
-  - `nix profile add ./result` — user profile, `~/.nix-profile/bin`
-  - NixOS `environment.systemPackages` via `pkgs.callPackage ./package.nix {}` — needs rebuild
-- Do not `nix profile add` or edit nixos-config until the user picks.
-- Uninstall the same channel. No dpkg db; `report.json` is not an install manifest.
-  - `nix profile remove <pname>` if it was `nix profile add`
-  - drop `callPackage` + `nixos-rebuild` if it was NixOS
-  - `nix-collect-garbage` for unreferenced store paths
-  - `$HOME` app config is not in the profile; **ask** before deleting
-- Do not `nix profile remove` or GC until the user picks.
-- Vendor blobs stay gitignored under `fixtures/vendor/`. Pins live in `fixtures/vendor/LOCK.json`. Regenerating examples needs those blobs: `bash scripts/generate-vendor-examples.sh`.
+- The CLI never installs or uninstalls. After generate/`nix build`, **ask every time** before `nix profile add`/`remove`, editing nixos-config, `nix-collect-garbage`, or deleting `$HOME` app config. Do not reuse the last choice.

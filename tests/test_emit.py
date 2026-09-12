@@ -70,6 +70,8 @@ class EmitTests(unittest.TestCase):
             self.assertIn("systemPackages", notes)
             self.assertIn("nix profile remove", notes)
             self.assertIn("nix-collect-garbage", notes)
+            self.assertIn("-o", notes)
+            self.assertIn("hash -r", notes)
             self.assertNotIn("dpkg -r", notes)
             self.assertIn("dontWrapQtApps = true", package)
             self.assertIn('find "$out/opt"', package)

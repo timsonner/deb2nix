@@ -6,26 +6,39 @@ Profile: `electron`.
 Hash-pinned.
 
 Generate / `nix build` does **not** put `grok-bot` on `PATH`.
-Ask how to install:
+`nix build .` writes `./result` in the **current directory**, so pin the
+symlink with `-o` (or `cd` here first):
 
 ```bash
-nix build .
+nix build . -o ./result
 ./result/bin/grok-bot
-nix profile add ./result          # user profile
-# or NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages
+nix profile add ./result
+hash -r
+nix profile list
 ```
 
-Uninstall is the same channel as install. There is no dpkg database.
-`report.json` is a conversion log, not an install manifest. Nix is the db
-(`nix profile list` or `configuration.nix`). Ask before removing:
+`grok-bot` is a GUI for electron/chromium-browser: it opens a window.
+`--help` / `--version` do too. After `nix profile add`, open a **new
+terminal** (or `hash -r`) so `PATH` updates.
+
+NixOS (then `sudo nixos-rebuild switch`):
+
+```nix
+environment.systemPackages = [
+  (pkgs.callPackage ./package.nix { })
+];
+```
+
+Uninstall is the same channel. There is no dpkg database.
+`report.json` is a conversion log, not an install manifest.
 
 ```bash
-nix profile remove grok-bot    # if installed with nix profile add
-# NixOS: drop the callPackage + nixos-rebuild switch
-nix-collect-garbage               # drop unreferenced store paths
+nix profile remove grok-bot
+nix-collect-garbage
 ```
 
-App config under `$HOME` is not in the Nix profile. Ask before deleting it.
+NixOS: drop the `callPackage` and rebuild. `$HOME` app config is not
+in the Nix profile.
 
 Out of scope for this generator:
 

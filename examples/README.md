@@ -14,7 +14,10 @@ These trees were produced by `scripts/generate-vendor-examples.sh` from `fixture
 Generated flakes do not set `allowUnfree`.
 
 ```bash
-nix build ./examples/google-chrome-stable
+nix build ./examples/google-chrome-stable -o ./examples/google-chrome-stable/result
+./examples/google-chrome-stable/result/bin/google-chrome-stable
+# optional PATH:
+nix profile add ./examples/google-chrome-stable/result
 # DisplayLink is supposed to fail:
 nix eval ./examples/displaylink-driver#packages.x86_64-linux.default
 ```

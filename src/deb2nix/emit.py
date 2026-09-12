@@ -11,6 +11,7 @@ from deb2nix import __version__
 from deb2nix.classify import Classification
 from deb2nix.control import Control
 from deb2nix.locate import MappingResult
+from deb2nix.howto import install_lines, remove_lines
 from deb2nix.nixlang import nix_ident, nix_indented_string, nix_string
 
 
@@ -603,36 +604,49 @@ def _emit_phase2_stub(ctx: EmitContext) -> str:
 
 
 def _emit_gui_notes(ctx: EmitContext) -> str:
+    pname = ctx.pname
+    # NOTES.md sits in the output dir; steps still use `.` so they work after cd.
+    install = "\n".join(install_lines(".", pname))
+    remove = "\n".join(remove_lines(pname))
+    main = ctx.main_program or pname
     return dedent(
         f"""\
-        # {ctx.pname} — userland notes
+        # {pname} — userland notes
 
         Profile: `{ctx.classification.profile}`.
 
         `package.nix` is a userland unpack + `autoPatchelfHook` + GApps wrap.
         Hash-pinned.
 
-        Generate / `nix build` does **not** put `{ctx.main_program or ctx.pname}` on `PATH`.
-        Ask how to install:
+        Generate / `nix build` does **not** put `{main}` on `PATH`.
+        `nix build .` writes `./result` in the **current directory**, so pin the
+        symlink with `-o` (or `cd` here first):
 
         ```bash
-        nix build .
-        ./result/bin/{ctx.main_program or ctx.pname}
-        nix profile add ./result          # user profile
-        # or NixOS: pkgs.callPackage ./package.nix {{}} in environment.systemPackages
+        {install}
         ```
 
-        Uninstall is the same channel as install. There is no dpkg database.
-        `report.json` is a conversion log, not an install manifest. Nix is the db
-        (`nix profile list` or `configuration.nix`). Ask before removing:
+        `{main}` is a GUI for electron/chromium-browser: it opens a window.
+        `--help` / `--version` do too. After `nix profile add`, open a **new
+        terminal** (or `hash -r`) so `PATH` updates.
+
+        NixOS (then `sudo nixos-rebuild switch`):
+
+        ```nix
+        environment.systemPackages = [
+          (pkgs.callPackage ./package.nix {{ }})
+        ];
+        ```
+
+        Uninstall is the same channel. There is no dpkg database.
+        `report.json` is a conversion log, not an install manifest.
 
         ```bash
-        nix profile remove {ctx.pname}    # if installed with nix profile add
-        # NixOS: drop the callPackage + nixos-rebuild switch
-        nix-collect-garbage               # drop unreferenced store paths
+        {remove}
         ```
 
-        App config under `$HOME` is not in the Nix profile. Ask before deleting it.
+        NixOS: drop the `callPackage` and rebuild. `$HOME` app config is not
+        in the Nix profile.
 
         Out of scope for this generator:
 

@@ -9,6 +9,7 @@ from pathlib import Path
 
 from deb2nix import __version__
 from deb2nix.classify import PROFILES
+from deb2nix.howto import install_lines, remove_lines
 from deb2nix.pipeline import run
 
 
@@ -125,17 +126,17 @@ def _print_summary(result) -> None:
 def _print_install_hint(result) -> None:
     """nix build is not dpkg -i. The binary is not on PATH until the user installs it."""
     main = result.pname
-    out = result.out_dir
-    print("  install : not on PATH. `nix build` is not an install. Ask how to install:")
-    print(f"            nix build {out}")
-    print(f"            ./result/bin/{main}                 # run from the build, GUI apps open a window")
-    print("            nix profile add ./result            # user profile → ~/.nix-profile/bin")
-    print("            NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages")
-    print("  remove  : dpkg does not know this package. Nix is the install db. Ask before removing:")
-    print(f"            nix profile remove {main}           # if installed with nix profile add")
+    print("  install : not on PATH. `nix build` is not dpkg -i. Copy-paste (cwd-safe):")
+    for line in install_lines(result.out_dir, main):
+        print(f"            {line}")
+    print("            GUI apps open a window (no useful --help/--version).")
+    print(f"            NixOS: pkgs.callPackage {result.out_dir}/package.nix {{}}")
+    print("                   in environment.systemPackages, then sudo nixos-rebuild switch")
+    print("  remove  : dpkg does not know this package. Nix is the install db:")
+    for line in remove_lines(main):
+        print(f"            {line}")
     print("            NixOS: drop the callPackage + nixos-rebuild switch")
-    print("            nix-collect-garbage                 # drop unreferenced store paths")
-    print("            $HOME config dirs are not in the profile; ask before deleting")
+    print("            $HOME config dirs are not in the profile")
 
 
 if __name__ == "__main__":

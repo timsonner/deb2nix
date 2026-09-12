@@ -50,31 +50,43 @@ Flags:
 - `--keep-unpack` — also copy the unpacked tree
 - `--json` — print `report.json` to stdout
 
-Then, for a **cli** (or userland GUI) result:
+Then, for a **cli** (or userland GUI) result. `nix build DIR` writes `./result` in **your current directory**, so pin it with `-o`:
 
 ```bash
-nix build ./hello-deb2nix-nix
-./result/bin/hello-deb2nix
+nix build ./hello-deb2nix-nix -o ./hello-deb2nix-nix/result
+./hello-deb2nix-nix/result/bin/hello-deb2nix          # run once, not on PATH
+nix profile add ./hello-deb2nix-nix/result            # user PATH (~/.nix-profile/bin)
+hash -r                                               # or open a new terminal
+nix profile list
+hello-deb2nix
 ```
 
-That is **not** `dpkg -i` and **not** on `PATH`. A new terminal will not find the command until you install it. Ask which:
+That is **not** `dpkg -i`. GUI binaries open a window; `--help` / `--version` do too.
+
+NixOS — point `callPackage` at the generated `package.nix`, then rebuild:
+
+```nix
+environment.systemPackages = [
+  (pkgs.callPackage ./hello-deb2nix-nix/package.nix { })
+];
+```
 
 ```bash
-nix profile add ./result                         # user profile (~/.nix-profile/bin)
-# or NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages
+sudo nixos-rebuild switch
 ```
 
-Uninstall the same way. `dpkg` does not know these packages. `report.json` is not an install db.
+Generated flakes do not inherit NixOS `allowUnfree`. Prefer `default.nix` / `nix build -f`, or `NIXPKGS_ALLOW_UNFREE=1 nix build --impure`.
+
+Uninstall the same channel. `dpkg` does not know these packages. `report.json` is not an install db.
 
 ```bash
-nix profile remove hello-deb2nix                 # if installed with nix profile add
-# NixOS: drop the callPackage + nixos-rebuild switch
-nix-collect-garbage                              # drop unreferenced store paths
+nix profile remove hello-deb2nix
+nix-collect-garbage
 ```
 
-App config under `$HOME` is not in the profile; ask before deleting it.
+NixOS: drop the `callPackage` and `nixos-rebuild switch`. App config under `$HOME` is not in the profile.
 
-GUI binaries open a window (Electron `--version` / `--help` do too). `driver` / `system` / `fhs-fallback` results evaluate to `throw`. DisplayLink’s throw is deliberate.
+`driver` / `system` / `fhs-fallback` results evaluate to `throw`. DisplayLink’s throw is deliberate.
 
 ## What it actually does
 
