@@ -10,8 +10,7 @@
     "reasons": [
       "electron payload: app.asar",
       "found app.asar.unpacked",
-      "electron/chromium helper files: licenses.chromium.html, chrome_crashpad_handler, libvk_swiftshader.so, app.asar, snapshot_blob.bin, v8_context_snapshot.bin, vk_swiftshader_icd.json",
-      "package name/description matches Electron app (grok-bot)"
+      "electron/chromium helper files: licenses.chromium.html, chrome_crashpad_handler, libvk_swiftshader.so, app.asar, snapshot_blob.bin, v8_context_snapshot.bin, vk_swiftshader_icd.json"
     ],
     "evidence": {
       "files": [
@@ -23,16 +22,12 @@
         "opt/Grok Bot/snapshot_blob.bin",
         "opt/Grok Bot/v8_context_snapshot.bin",
         "opt/Grok Bot/vk_swiftshader_icd.json"
-      ],
-      "package": [
-        "grok-bot"
       ]
     },
     "subtype": "electron",
     "warnings": []
   },
-  "unfree": true,
-  "licenseExpr": "lib.licenses.unfree",
+  "licenseExpr": "lib.licenses.free",
   "source": {
     "kind": "url",
     "url": "https://downloads.cursor.com/grokbot/stable/c1e7d7a46549956d25f53e9c0b9f59666e03aa3a/linux/x64/grok-bot_0.47.0_amd64.deb",
@@ -51,12 +46,12 @@
   "mapping": {
     "locateAvailable": false,
     "buildInputs": [
-      "xorg.libX11",
-      "xorg.libXcomposite",
-      "xorg.libXdamage",
-      "xorg.libXext",
-      "xorg.libXfixes",
-      "xorg.libXrandr",
+      "libx11",
+      "libxcomposite",
+      "libxdamage",
+      "libxext",
+      "libxfixes",
+      "libxrandr",
       "alsa-lib",
       "at-spi2-atk",
       "at-spi2-core",
@@ -71,7 +66,7 @@
       "nss",
       "pango",
       "systemd",
-      "xorg.libxcb",
+      "libxcb",
       "libxkbcommon"
     ],
     "unmapped": [],
@@ -87,37 +82,37 @@
       },
       {
         "lib": "libX11.so.6",
-        "pkg": "xorg.libX11",
+        "pkg": "libx11",
         "source": "builtin",
         "note": ""
       },
       {
         "lib": "libXcomposite.so.1",
-        "pkg": "xorg.libXcomposite",
+        "pkg": "libxcomposite",
         "source": "builtin",
         "note": ""
       },
       {
         "lib": "libXdamage.so.1",
-        "pkg": "xorg.libXdamage",
+        "pkg": "libxdamage",
         "source": "builtin",
         "note": ""
       },
       {
         "lib": "libXext.so.6",
-        "pkg": "xorg.libXext",
+        "pkg": "libxext",
         "source": "builtin",
         "note": ""
       },
       {
         "lib": "libXfixes.so.3",
-        "pkg": "xorg.libXfixes",
+        "pkg": "libxfixes",
         "source": "builtin",
         "note": ""
       },
       {
         "lib": "libXrandr.so.2",
-        "pkg": "xorg.libXrandr",
+        "pkg": "libxrandr",
         "source": "builtin",
         "note": ""
       },
@@ -279,7 +274,7 @@
       },
       {
         "lib": "libxcb.so.1",
-        "pkg": "xorg.libxcb",
+        "pkg": "libxcb",
         "source": "builtin",
         "note": ""
       },
@@ -343,9 +338,8 @@
   "mainProgram": "grok-bot",
   "constraints": {
     "noPublicNixpkgsPublish": true,
-    "unfreeExplicit": true,
     "hashPinned": true,
     "honestFailureOverSilentFhs": true,
-    "noDisplayLinkKernelLoad": true
+    "noKernelModuleLoad": true
   }
 }

@@ -52,6 +52,15 @@ class ControlTests(unittest.TestCase):
         )
         self.assertFalse(c.is_unfree())
 
+    def test_license_unknown_is_not_unfree(self) -> None:
+        """Debian License: unknown + Section: default (Grok Bot) is not non-free."""
+        c = parse_control_text(
+            "Package: grok-bot\nVersion: 0.47.0\nArchitecture: amd64\n"
+            "Section: default\nLicense: unknown\nDescription: grok-bot\n"
+        )
+        self.assertFalse(c.is_unfree())
+        self.assertEqual(c.license, "unknown")
+
     def test_missing_package(self) -> None:
         with self.assertRaises(ValueError):
             parse_control_text("Version: 1\n")

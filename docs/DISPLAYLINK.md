@@ -4,6 +4,16 @@ Tim approval 2026-09-10 accepted the Synaptics/DisplayLink EULA. This file is th
 
 deb2nix still must not `insmod`, run DKMS, load `evdi`, enable `hardware.video.displaylink`, or change Tim’s machines.
 
+## Official Ubuntu download is not a `.deb`
+
+The Synaptics “USB Graphics Software for Ubuntu” file is a **`.zip` containing a Makeself `.run`** (`displaylink-driver-6.3.0-48.run`), not a Debian package. Inside: `DisplayLinkManager` binaries, firmware `.spkg`, `evdi.tar.gz` (kernel-module **source**), and Ubuntu installer scripts (`apt`, DKMS, `/opt/displaylink`).
+
+deb2nix will refuse that path (`input must be a Debian .deb`). Do not run the `.run` on NixOS.
+
+On NixOS 26.05 the native path is `pkgs.displaylink` (`requireFile` of the **6.2.0** zip nixpkgs pins) plus `services.xserver.videoDrivers = [ "displaylink" "modesetting" ]`, which loads `evdi` and starts `DisplayLinkManager`. That is a human NixOS change, not a generator emit. Hyprland/wlroots is extra: userland `nix build` of the daemon is not “the dock works”.
+
+A 6.3.0 zip does **not** satisfy nixpkgs 26.05 `requireFile` (name + SRI are 6.2.0). Overlay or download the zip nixpkgs asks for.
+
 ## What was fetched
 
 Launchpad PPA `displaylink-driver` 6.3.0 for Ubuntu noble, **publicly fetchable** after the EULA/PPA listing:

@@ -1,6 +1,6 @@
 # Generated examples (hash-pinned, no vendor blobs)
 
-These trees were produced by `scripts/generate-vendor-examples.sh` from `fixtures/vendor/*.deb` after the 2026-09-10 EULA approval. The `.deb` files are gitignored; `fetchurl` URLs + SRI hashes are in each `package.nix` / `report.json`.
+These trees were produced by `scripts/generate-vendor-examples.sh` from `fixtures/vendor/*.deb` after the 2026-09-10 EULA approval. `examples/grok-bot` was regenerated 2026-09-12 from the same pin (content-based emit, `libx11`, `License: unknown` → `lib.licenses.free`). The `.deb` files are gitignored; `fetchurl` URLs + SRI hashes are in each `package.nix` / `report.json`. Other example trees may still reflect the pre-812b318 emit until regenerated.
 
 | Directory | Profile | `nix build` (this VM, 2026-09-10) |
 | --- | --- | --- |

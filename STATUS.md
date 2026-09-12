@@ -58,7 +58,7 @@ Full pack on some boxes: `/workspace/ops-graph/jobs/deb2nix-generator/prior-art.
   - `cli`: leftover ELF/binaries
   - `fhs-fallback`: honest `throw`, not `buildFHSEnv`
 - Synthetic fixtures in `fixtures/` plus vendor pins in `fixtures/vendor/LOCK.json` (`.deb` blobs gitignored).
-- License: Debian + nixpkgs convention. Known `License:` → `lib.licenses.*`; `non-free` → `unfree`; missing field on a free section → `lib.licenses.free`. No `allowUnfree` in generated flakes — the parent OS/user nixpkgs config decides.
+- License: Debian + nixpkgs convention. Known `License:` → `lib.licenses.*`; `non-free` → `unfree`; missing field **or placeholder** (`unknown`, `n/a`) on a free section → `lib.licenses.free`. No `allowUnfree` in generated flakes — the parent OS/user nixpkgs config decides. Grok Bot 0.47.0 is `License: unknown` / `Section: default`, so it does **not** trip the unfree gate despite being proprietary. That is field policy, not a product-name guess.
 
 ## What is stubbed
 
@@ -123,11 +123,30 @@ Verified on this cloud VM (2026-09-10), generate → `nix build` only:
 
 `chrome-sandbox` / `msedge-sandbox` in those store paths are mode `555`, not setuid. GUI smoke is still NixOS+Hyprland.
 
+## 2026-09-12 — NixOS 26.05 + Hyprland laptop (Tim)
+
+Re-ran generate + userland `nix build` against a local `grok-bot_0.47.0_amd64.deb` (same SRI as the 2026-09-10 pin). HEAD classifier/emit, not the stale committed `examples/grok-bot` tree.
+
+| Check | Result |
+| --- | --- |
+| Classifier | `electron` (high) from `app.asar` / `app.asar.unpacked`. Not `chromium-browser`. No product-name reason. |
+| Hash | `sha256-EcoPUaU1uXr1GjUq35wPns0uGwQwpprpRRtoinoGWAg=` |
+| `nix build -f` | `/nix/store/…-grok-bot-0.47.0`; `$out/bin/grok-bot` wraps `opt/Grok Bot/grok-bot` |
+| Sandbox | `chrome-sandbox` mode 555, not setuid. Wrapper has **no** `--no-sandbox`. |
+| Runtime (accidental) | `grok-bot --version` started Electron on Wayland (`NIXOS_OZONE_WL`); renderer had `--enable-sandbox`. Killed; not a GUI sign-off. |
+| DisplayLink zip in `~/Downloads` | Makeself `.run`, **not** a `.deb`. Did not install. Did not `insmod`. |
+
+Lessons folded into the generator:
+
+- `License: unknown` / `n/a` → `lib.licenses.free` (was a quoted Nix string `"unknown"`).
+- Builtin + GUI extras emit `libx11` / `libxcb` / … not `xorg.libX11` (26.05 deprecation warnings).
+- Local `.run` / `.zip` is an explicit error, not a cryptic suffix check.
+
 ## Next steps
 
-**Phase 2 GUI smoke — NixOS + Hyprland VM** (not this cloud run)
+**Phase 2 GUI smoke — this Hyprland box**
 
-1. Install the userland store paths from `examples/{grok-bot,vscode,google-chrome-stable,microsoft-edge-stable}`.
+1. Launch the userland store path (`$out/bin/grok-bot`) under Hyprland. `--version` is not a display test (it may open a window).
 2. Record GPU/sandbox/keyring failures honestly. Still no `--no-sandbox` as a generator default.
 3. Optional: `nix-index-database` so `nix-locate` works in `nix run`.
 
@@ -138,8 +157,9 @@ A working driver needs NixOS `hardware.video.displaylink` + `evdi` on a machine 
 ## Known gaps
 
 - Builtin lib map is incomplete; unmapped libs become `autoPatchelfIgnoreMissingDeps` (listed in `report.json`). Visible, not silent. Userland `nix build` can succeed while the GUI still fails at runtime.
-- `License:` is often missing on Debian binaries; that becomes `lib.licenses.free` (unspecified free), not a silent MIT and not a forced unfree. Debian `non-free` still maps to `lib.licenses.unfree` so NixOS `allowUnfree` applies.
+- `License:` is often missing on Debian binaries, or is a placeholder (`unknown`). That becomes `lib.licenses.free` (unspecified free), not a silent MIT and not a forced unfree. Debian `non-free` still maps to `lib.licenses.unfree` so NixOS `allowUnfree` applies. Proprietary apps that ship `License: unknown` (Grok Bot) therefore evaluate without `allowUnfree`.
 - Generated flakes pin `nixpkgs` to `nixos-unstable` **unpinned URL** (consumer `flake.lock` on first `nix build`). The `.deb` itself is SRI-pinned.
 - Multi-arch `.deb`s other than amd64/arm64 are mapped coarsely.
 - No Windows/macOS.
-- DisplayLink PPA package ships **userspace** `DisplayLinkManager` and depends on `evdi-dkms | evdi`. Patchelf-only userland is not claimed as a working driver.
+- DisplayLink PPA package ships **userspace** `DisplayLinkManager` and depends on `evdi-dkms | evdi`. The official Ubuntu download is a Makeself `.run` zip, not a `.deb`. Patchelf-only userland is not claimed as a working driver.
+- Committed `examples/` trees were generated before the content-based + license/xorg emit; regenerate with `scripts/generate-vendor-examples.sh` (needs `fixtures/vendor/*.deb`).

@@ -69,14 +69,15 @@ nix build ./hello-deb2nix-nix
 6. Classify a profile from **files and ELF `DT_NEEDED` only** (see table). Package names and descriptions are ignored. `app.asar` selects `electron`; `chrome-sandbox` without asar selects `chromium-browser`.
 7. Emit `flake.nix`, `package.nix`, `default.nix`, `report.json`. Local inputs without `--src-url` are copied to `src.deb`.
 
-`meta.license` follows Debian + nixpkgs: a known `License:` maps to `lib.licenses.*`; Debian `non-free` → `lib.licenses.unfree`; missing `License:` on a free section → `lib.licenses.free`. The generator does **not** set `allowUnfree`. That is the parent NixOS / user nixpkgs config (`nixpkgs.config.allowUnfree`, or `NIXPKGS_ALLOW_UNFREE=1 nix build --impure` on a flake). `default.nix` uses `import <nixpkgs> {}`, so `~/.config/nixpkgs/config.nix` applies.
+`meta.license` follows Debian + nixpkgs: a known `License:` maps to `lib.licenses.*`; Debian `non-free` → `lib.licenses.unfree`; missing or placeholder `License:` (`unknown`, `n/a`) on a free section → `lib.licenses.free`. The generator does **not** set `allowUnfree`. That is the parent NixOS / user nixpkgs config (`nixpkgs.config.allowUnfree`, or `NIXPKGS_ALLOW_UNFREE=1 nix build --impure` on a flake). `default.nix` uses `import <nixpkgs> {}`, so `~/.config/nixpkgs/config.nix` applies. Proprietary `.deb`s that ship `License: unknown` (Grok Bot) therefore do not trip the unfree gate.
 
 ## Constraints (honored)
 
 - Hashes are pinned.
 - Honest failure > silent FHS.
+- Input must be a Debian `.deb`. Makeself `.run` installers and vendor `.zip` packs (the official DisplayLink Ubuntu download) are rejected — they are not debs. See `docs/DISPLAYLINK.md`.
 - No DisplayLink / DKMS / `insmod` (see `docs/DISPLAYLINK.md`).
-- GUI smoke for Electron/browsers is **not** this VM. That is NixOS + Hyprland.
+- GUI smoke for Electron/browsers is **not** `nix build`. That is NixOS + Hyprland. Electron `--version` may still open a window.
 
 ## Fixture matrix
 

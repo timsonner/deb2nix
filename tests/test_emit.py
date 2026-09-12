@@ -145,6 +145,29 @@ class EmitTests(unittest.TestCase):
         )
         self.assertEqual(license_expr_for(nonfree), "lib.licenses.unfree")
 
+    def test_placeholder_license_is_unspecified_free(self) -> None:
+        """Grok Bot 0.47.0 ships License: unknown; do not emit a quoted Nix string."""
+        unknown = parse_control_text(
+            "Package: grok-bot\nVersion: 0.47.0\nArchitecture: amd64\n"
+            "Section: default\nLicense: unknown\nDescription: grok-bot\n"
+        )
+        self.assertEqual(license_expr_for(unknown), "lib.licenses.free")
+        self.assertFalse(unknown.is_unfree())
+        na = parse_control_text(
+            "Package: x\nVersion: 1\nArchitecture: amd64\nLicense: n/a\nDescription: x\n"
+        )
+        self.assertEqual(license_expr_for(na), "lib.licenses.free")
+
+    def test_electron_uses_flat_x11_attrs(self) -> None:
+        """nixpkgs 26.05+ deprecates xorg.libX11; emit libx11 etc."""
+        with TemporaryDirectory() as td:
+            emit_all(Path(td), _ctx("electron"))
+            package = (Path(td) / "package.nix").read_text()
+            self.assertIn("libx11", package)
+            self.assertIn("libxcb", package)
+            self.assertNotIn("xorg.libX11", package)
+            self.assertNotIn("xorg.libxcb", package)
+
     def test_flake_has_no_unfree_gate(self) -> None:
         with TemporaryDirectory() as td:
             emit_all(Path(td), _ctx("cli"))

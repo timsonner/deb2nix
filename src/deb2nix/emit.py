@@ -56,11 +56,28 @@ class EmitContext:
     needed: list[str]
 
 
+# Debian binaries often omit License: or put a placeholder (Grok Bot: "unknown").
+# Same stand-in as a missing field: lib.licenses.free = unspecified, not MIT, not unfree.
+UNSPECIFIED_LICENSE_KEYS = {
+    "",
+    "unknown",
+    "n/a",
+    "na",
+    "none",
+    "unspecified",
+    "-",
+    ".",
+}
+
+
 def license_expr_for(control: Control) -> str:
     """Follow nixpkgs meta.license so the parent OS allowUnfree policy applies.
 
     The generator never sets allowUnfree. NixOS / ~/.config/nixpkgs/config.nix /
     NIXPKGS_ALLOW_UNFREE decide whether an unfree derivation evaluates.
+    Placeholder License: values (unknown, n/a) are treated as missing, not quoted
+    as a Nix string — a quoted "unknown" is not a nixpkgs license and skips the
+    unfree gate without meaning "free software".
     """
     raw = (control.license or "").strip()
     key = raw.lower().split(",")[0].strip()
@@ -68,9 +85,7 @@ def license_expr_for(control: Control) -> str:
         return "lib.licenses.unfree"
     if key in NIXPKGS_LICENSE:
         return NIXPKGS_LICENSE[key]
-    if not raw:
-        # Debian binaries often omit License: in control (it lives in copyright).
-        # lib.licenses.free = unspecified free license, the nixpkgs stand-in.
+    if key in UNSPECIFIED_LICENSE_KEYS:
         return "lib.licenses.free"
     return nix_string(raw)
 
@@ -167,13 +182,13 @@ GUI_USERLAND_EXTRAS = [
     "nspr",
     "nss",
     "pango",
-    "xorg.libX11",
-    "xorg.libXcomposite",
-    "xorg.libXdamage",
-    "xorg.libXext",
-    "xorg.libXfixes",
-    "xorg.libXrandr",
-    "xorg.libxcb",
+    "libx11",
+    "libxcomposite",
+    "libxdamage",
+    "libxext",
+    "libxfixes",
+    "libxrandr",
+    "libxcb",
 ]
 
 GTK_USERLAND_EXTRAS = [
@@ -599,7 +614,7 @@ def _emit_gui_notes(ctx: EmitContext) -> str:
 
         Out of scope for this generator:
 
-        - GUI/display smoke (`nix build` is not a display test).
+        - GUI/display smoke (`nix build` is not a display test; Electron `--version` may open a window).
         - Disabling the Chromium sandbox.
         - Silent `buildFHSEnv`.
         - setuid on `*-sandbox` (mode 0755; user namespaces).

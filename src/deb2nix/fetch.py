@@ -13,6 +13,15 @@ def is_url(source: str) -> bool:
     return parsed.scheme in {"http", "https"}
 
 
+def _not_a_deb_message(name: str) -> str:
+    """Vendor Ubuntu 'drivers' are often Makeself .run inside a .zip, not a .deb."""
+    return (
+        f"input must be a Debian .deb (got {name}). "
+        "Makeself .run installers and vendor .zip packs (e.g. DisplayLink Ubuntu EXE) "
+        "are not debs — extract or fetch the .deb, or use the NixOS-native package."
+    )
+
+
 def fetch_deb(source: str, dest_dir: Path) -> tuple[Path, str | None]:
     """Return (local_deb_path, original_url_or_none)."""
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -26,8 +35,8 @@ def fetch_deb(source: str, dest_dir: Path) -> tuple[Path, str | None]:
     path = Path(source).expanduser().resolve()
     if not path.is_file():
         raise FileNotFoundError(f"not a file: {source}")
-    if path.suffix != ".deb":
-        raise ValueError(f"input must be a .deb file (got {path.name})")
+    if path.suffix.lower() != ".deb":
+        raise ValueError(_not_a_deb_message(path.name))
     dest = dest_dir / path.name
     if path != dest:
         shutil.copy2(path, dest)

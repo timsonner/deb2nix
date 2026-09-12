@@ -42,6 +42,18 @@ class LocateTests(unittest.TestCase):
         self.assertEqual(result.mapped[0].source, "bundled")
         self.assertEqual(result.build_inputs, [])
 
+    def test_x11_maps_to_flat_attrs(self) -> None:
+        result = map_libraries(
+            ["libX11.so.6", "libxcb.so.1", "libXdamage.so.1"],
+            bundled_names=set(),
+            skip_locate=True,
+        )
+        by_lib = {m.lib: m for m in result.mapped}
+        self.assertEqual(by_lib["libX11.so.6"].pkg, "libx11")
+        self.assertEqual(by_lib["libxcb.so.1"].pkg, "libxcb")
+        self.assertEqual(by_lib["libXdamage.so.1"].pkg, "libxdamage")
+        self.assertNotIn("xorg.libX11", result.build_inputs)
+
 
 if __name__ == "__main__":
     unittest.main()
