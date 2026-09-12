@@ -67,6 +67,7 @@ class EmitTests(unittest.TestCase):
             notes = (Path(td) / "NOTES.md").read_text()
             self.assertIn("PATH", notes)
             self.assertIn("nix profile add", notes)
+            self.assertIn("hyprlauncher", notes)
             self.assertIn("systemPackages", notes)
             self.assertIn("nix profile remove", notes)
             self.assertIn("nix-collect-garbage", notes)

@@ -56,6 +56,7 @@ Then, for a **cli** (or userland GUI) result. `nix build DIR` writes `./result` 
 nix build ./hello-deb2nix-nix -o ./hello-deb2nix-nix/result
 ./hello-deb2nix-nix/result/bin/hello-deb2nix          # run once, not on PATH
 nix profile add ./hello-deb2nix-nix/result            # user PATH (~/.nix-profile/bin)
+pgrep -x hyprlauncher >/dev/null && { pkill -x hyprlauncher; i=0; while pgrep -x hyprlauncher >/dev/null && [ "$i" -lt 30 ]; do sleep 0.1; i=$((i+1)); done; pkill -KILL -x hyprlauncher 2>/dev/null || true; rm -f "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/.hyprlauncher.sock"; hyprlauncher -d; } || true
 hash -r                                               # or open a new terminal
 nix profile list
 hello-deb2nix
@@ -81,6 +82,7 @@ Uninstall the same channel. `dpkg` does not know these packages. `report.json` i
 
 ```bash
 nix profile remove hello-deb2nix
+pgrep -x hyprlauncher >/dev/null && { pkill -x hyprlauncher; i=0; while pgrep -x hyprlauncher >/dev/null && [ "$i" -lt 30 ]; do sleep 0.1; i=$((i+1)); done; pkill -KILL -x hyprlauncher 2>/dev/null || true; rm -f "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/.hyprlauncher.sock"; hyprlauncher -d; } || true
 nix-collect-garbage
 ```
 

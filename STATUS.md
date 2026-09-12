@@ -143,6 +143,9 @@ Lessons folded into the generator:
 - Builtin + GUI extras emit `libx11` / `libxcb` / … not `xorg.libX11` (26.05 deprecation warnings).
 - Local `.run` / `.zip` is an explicit error, not a cryptic suffix check.
 - CLI + NOTES.md + skill: `nix build` is not on PATH; **ask** user vs `nix profile add` vs NixOS `systemPackages`. Uninstall is the same channel (`nix profile remove` / drop `callPackage`). No extra deb2nix install manifest; Nix is the db. `$HOME` config is not in the profile.
+- After `nix profile add`/`remove`, kill hyprlauncher and wait for the socket
+  before `hyprlauncher -d`. A second start just pokes the live daemon and does
+  not recache `.desktop` files.
 
 ## Next steps
 

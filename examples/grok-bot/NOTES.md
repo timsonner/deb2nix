@@ -13,13 +13,15 @@ symlink with `-o` (or `cd` here first):
 nix build . -o ./result
 ./result/bin/grok-bot
 nix profile add ./result
+pgrep -x hyprlauncher >/dev/null && { pkill -x hyprlauncher; i=0; while pgrep -x hyprlauncher >/dev/null && [ "$i" -lt 30 ]; do sleep 0.1; i=$((i+1)); done; pkill -KILL -x hyprlauncher 2>/dev/null || true; rm -f "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/.hyprlauncher.sock"; hyprlauncher -d; } || true
 hash -r
 nix profile list
 ```
 
 `grok-bot` is a GUI for electron/chromium-browser: it opens a window.
 `--help` / `--version` do too. After `nix profile add`, open a **new
-terminal** (or `hash -r`) so `PATH` updates.
+terminal** (or `hash -r`) so `PATH` updates. The hyprlauncher line
+restarts the daemon if it is running so the new `.desktop` is indexed.
 
 NixOS (then `sudo nixos-rebuild switch`):
 

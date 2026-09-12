@@ -7,7 +7,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from deb2nix.emit import emit_all
-from deb2nix.howto import install_lines, remove_lines, result_link
+from deb2nix.howto import LAUNCHER_REFRESH, install_lines, remove_lines, result_link
 from test_emit import _ctx
 
 
@@ -19,13 +19,17 @@ class HowtoTests(unittest.TestCase):
         self.assertIn(f"nix build {out} -o {out}/result", joined)
         self.assertIn(f"{out}/result/bin/hello-deb2nix", joined)
         self.assertIn(f"nix profile add {out}/result", joined)
+        self.assertIn(LAUNCHER_REFRESH, joined)
         self.assertIn("hash -r", joined)
         self.assertIn("nix profile list", joined)
         self.assertNotIn("nix profile add ./result\n", joined + "\n")
+        add_at = lines.index(f"nix profile add {out}/result")
+        self.assertEqual(lines[add_at + 1], LAUNCHER_REFRESH)
 
     def test_remove_uses_pname(self) -> None:
         lines = remove_lines("grok-bot")
         self.assertEqual(lines[0], "nix profile remove grok-bot")
+        self.assertEqual(lines[1], LAUNCHER_REFRESH)
         self.assertIn("nix-collect-garbage", lines)
 
     def test_result_link(self) -> None:
@@ -37,6 +41,7 @@ class HowtoTests(unittest.TestCase):
             notes = (Path(td) / "NOTES.md").read_text()
             self.assertIn("nix build . -o ./result", notes)
             self.assertIn("nix profile add ./result", notes)
+            self.assertIn(LAUNCHER_REFRESH, notes)
             self.assertIn("hash -r", notes)
             self.assertIn("nix profile list", notes)
             self.assertIn("nixos-rebuild", notes)

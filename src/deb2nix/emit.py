@@ -646,7 +646,8 @@ def _emit_gui_notes(ctx: EmitContext) -> str:
 
         `{main}` is a GUI for electron/chromium-browser: it opens a window.
         `--help` / `--version` do too. After `nix profile add`, open a **new
-        terminal** (or `hash -r`) so `PATH` updates.
+        terminal** (or `hash -r`) so `PATH` updates. The hyprlauncher line
+        restarts the daemon if it is running so the new `.desktop` is indexed.
 
         NixOS (then `sudo nixos-rebuild switch`):
 
