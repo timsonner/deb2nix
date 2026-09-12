@@ -15,6 +15,18 @@ nix profile add ./result          # user profile
 # or NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages
 ```
 
+Uninstall is the same channel as install. There is no dpkg database.
+`report.json` is a conversion log, not an install manifest. Nix is the db
+(`nix profile list` or `configuration.nix`). Ask before removing:
+
+```bash
+nix profile remove grok-bot    # if installed with nix profile add
+# NixOS: drop the callPackage + nixos-rebuild switch
+nix-collect-garbage               # drop unreferenced store paths
+```
+
+App config under `$HOME` is not in the Nix profile. Ask before deleting it.
+
 Out of scope for this generator:
 
 - GUI/display smoke (`nix build` is not a display test; Electron `--version` may open a window).

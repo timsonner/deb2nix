@@ -131,6 +131,11 @@ def _print_install_hint(result) -> None:
     print(f"            ./result/bin/{main}                 # run from the build, GUI apps open a window")
     print("            nix profile add ./result            # user profile → ~/.nix-profile/bin")
     print("            NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages")
+    print("  remove  : dpkg does not know this package. Nix is the install db. Ask before removing:")
+    print(f"            nix profile remove {main}           # if installed with nix profile add")
+    print("            NixOS: drop the callPackage + nixos-rebuild switch")
+    print("            nix-collect-garbage                 # drop unreferenced store paths")
+    print("            $HOME config dirs are not in the profile; ask before deleting")
 
 
 if __name__ == "__main__":

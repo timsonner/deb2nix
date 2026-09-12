@@ -42,4 +42,10 @@ Do not add generator tools (`python3`, `dpkg`, `gcc`, `binutils`) to NixOS `envi
   - `nix profile add ./result` — user profile, `~/.nix-profile/bin`
   - NixOS `environment.systemPackages` via `pkgs.callPackage ./package.nix {}` — needs rebuild
 - Do not `nix profile add` or edit nixos-config until the user picks.
+- Uninstall the same channel. No dpkg db; `report.json` is not an install manifest.
+  - `nix profile remove <pname>` if it was `nix profile add`
+  - drop `callPackage` + `nixos-rebuild` if it was NixOS
+  - `nix-collect-garbage` for unreferenced store paths
+  - `$HOME` app config is not in the profile; **ask** before deleting
+- Do not `nix profile remove` or GC until the user picks.
 - Vendor blobs stay gitignored under `fixtures/vendor/`. Pins live in `fixtures/vendor/LOCK.json`. Regenerating examples needs those blobs: `bash scripts/generate-vendor-examples.sh`.

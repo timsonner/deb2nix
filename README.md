@@ -64,6 +64,16 @@ nix profile add ./result                         # user profile (~/.nix-profile/
 # or NixOS: pkgs.callPackage ./package.nix {} in environment.systemPackages
 ```
 
+Uninstall the same way. `dpkg` does not know these packages. `report.json` is not an install db.
+
+```bash
+nix profile remove hello-deb2nix                 # if installed with nix profile add
+# NixOS: drop the callPackage + nixos-rebuild switch
+nix-collect-garbage                              # drop unreferenced store paths
+```
+
+App config under `$HOME` is not in the profile; ask before deleting it.
+
 GUI binaries open a window (Electron `--version` / `--help` do too). `driver` / `system` / `fhs-fallback` results evaluate to `throw`. DisplayLink’s throw is deliberate.
 
 ## What it actually does
